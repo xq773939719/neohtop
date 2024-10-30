@@ -5,53 +5,19 @@
     faMemory,
     faServer,
   } from "@fortawesome/free-solid-svg-icons";
-
-  interface SystemStats {
-    cpu_usage: number[];
-    memory_total: number;
-    memory_used: number;
-    memory_free: number;
-    memory_cached: number;
-    uptime: number;
-    load_avg: [number, number, number];
-  }
+  import type { SystemStats } from "$lib/types";
+  import {
+    formatUptime,
+    formatMemorySize,
+    formatPercentage,
+    getUsageClass,
+  } from "$lib/utils";
 
   export let systemStats: SystemStats | null = null;
-
-  function formatUptime(seconds: number): string {
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${days}d ${hours}h ${minutes}m`;
-  }
-
-  function formatMemorySize(bytes: number): string {
-    const gb = bytes / (1024 * 1024 * 1024);
-    return `${gb.toFixed(1)} GB`;
-  }
-
-  function formatMemoryPercentage(): string {
-    if (!systemStats) return "0%";
-    return (
-      ((systemStats.memory_used / systemStats.memory_total) * 100).toFixed(1) +
-      "%"
-    );
-  }
-
-  function getUsageClass(percentage: number): string {
-    if (percentage >= 90) return "critical";
-    if (percentage >= 60) return "high";
-    if (percentage >= 30) return "medium";
-    return "low";
-  }
 
   $: memoryPercentage = systemStats
     ? (systemStats.memory_used / systemStats.memory_total) * 100
     : 0;
-
-  function formatPercentage(value: number): string {
-    return `${value.toFixed(1)}%`;
-  }
 </script>
 
 <div class="stats-bar">
@@ -109,11 +75,11 @@
             </div>
             <div class="memory-row">
               <span>Free:</span>
-              <span
-                >{formatMemorySize(
-                  systemStats.memory_total - systemStats.memory_used,
-                )}</span
-              >
+              <span>{formatMemorySize(systemStats.memory_free)}</span>
+            </div>
+            <div class="memory-row">
+              <span>Cached:</span>
+              <span>{formatMemorySize(systemStats.memory_cached)}</span>
             </div>
           </div>
         </div>

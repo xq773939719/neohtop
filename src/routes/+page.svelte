@@ -6,37 +6,9 @@
   import ProcessTable from "$lib/components/ProcessTable.svelte";
   import ProcessDetailsModal from "$lib/components/ProcessDetailsModal.svelte";
   import KillProcessModal from "$lib/components/KillProcessModal.svelte";
-  import { formatStatus } from "$lib/utils/processStatus";
-  import { themeStore } from "$lib/stores/theme";
-  import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
-
-  interface Process {
-    pid: number;
-    ppid: number;
-    name: string;
-    cpu_usage: number;
-    memory_usage: number;
-    status: string;
-    user: string;
-    command: string;
-    threads?: number;
-  }
-
-  interface SystemStats {
-    cpu_usage: number[];
-    memory_total: number;
-    memory_used: number;
-    uptime: number;
-    load_avg: [number, number, number];
-  }
-
-  interface Column {
-    id: keyof Process;
-    label: string;
-    visible: boolean;
-    required?: boolean;
-    format?: (value: any) => string;
-  }
+  import { formatStatus } from "$lib/utils";
+  import { themeStore } from "$lib/stores";
+  import type { Process, SystemStats, Column } from "$lib/types";
 
   let processes: Process[] = [];
   let systemStats: SystemStats | null = null;
@@ -122,16 +94,24 @@
     try {
       processes = await invoke<Process[]>("get_processes");
       error = null;
-    } catch (e) {
-      error = e.toString();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        error = e.message;
+      } else {
+        error = String(e);
+      }
     }
   }
 
   async function getSystemStats() {
     try {
       systemStats = await invoke<SystemStats>("get_system_stats");
-    } catch (e) {
-      console.error("Failed to get system stats:", e);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        error = e.message;
+      } else {
+        error = String(e);
+      }
     }
   }
 
@@ -141,8 +121,12 @@
       if (success) {
         await getProcesses();
       }
-    } catch (e) {
-      error = e.toString();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        error = e.message;
+      } else {
+        error = String(e);
+      }
     }
   }
 
@@ -210,13 +194,15 @@
 {#if isLoading}
   <div class="loading-container">
     <div class="loading-content">
-      <div class="spinner" />
+      <div class="spinner"></div>
       <span class="loading-text">Loading processes...</span>
     </div>
   </div>
 {:else}
   <main>
-    <StatsBar {systemStats} />
+    {#if systemStats}
+      <StatsBar {systemStats} />
+    {/if}
 
     <ToolBar
       bind:searchTerm

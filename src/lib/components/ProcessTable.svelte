@@ -5,33 +5,7 @@
     faXmark,
   } from "@fortawesome/free-solid-svg-icons";
   import Fa from "svelte-fa";
-
-  interface Process {
-    pid: number;
-    ppid: number;
-    name: string;
-    cpu_usage: number;
-    memory_usage: number;
-    status:
-      | "Running"
-      | "Sleeping"
-      | "Idle"
-      | "Zombie"
-      | "Unknown"
-      | "Stop"
-      | string;
-    user: string;
-    command: string;
-    threads?: number;
-  }
-
-  interface Column {
-    id: keyof Process;
-    label: string;
-    visible: boolean;
-    required?: boolean;
-    format?: (value: any) => string;
-  }
+  import type { Process, Column } from "$lib/types";
 
   export let processes: Process[];
   export let columns: Column[];

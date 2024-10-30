@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { themeStore } from "$lib/stores/theme";
-  import { themes } from "$lib/styles/themes";
+  import { themeStore } from "$lib/stores";
+  import { themes } from "$lib/styles";
   import { fade } from "svelte/transition";
 
   let showMenu = false;
@@ -33,12 +33,18 @@
   >
     <div class="current-theme">
       <div class="theme-preview" style:background={$themeStore.colors.base}>
-        <div class="preview-color" style:background={$themeStore.colors.blue} />
-        <div class="preview-color" style:background={$themeStore.colors.red} />
+        <div
+          class="preview-color"
+          style:background={$themeStore.colors.blue}
+        ></div>
+        <div
+          class="preview-color"
+          style:background={$themeStore.colors.red}
+        ></div>
         <div
           class="preview-color"
           style:background={$themeStore.colors.green}
-        />
+        ></div>
       </div>
       {$themeStore.label}
     </div>
@@ -46,6 +52,8 @@
   </button>
 
   {#if showMenu}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore element_invalid_self_closing_tag -->
     <div
       class="theme-menu"
       transition:fade={{ duration: 100 }}

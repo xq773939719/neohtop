@@ -1,18 +1,7 @@
 <script lang="ts">
   import Modal from "./Modal.svelte";
-  import { formatStatus } from "$lib/utils/processStatus";
-
-  interface Process {
-    pid: number;
-    ppid: number;
-    name: string;
-    cpu_usage: number;
-    memory_usage: number;
-    status: string;
-    user: string;
-    command: string;
-    threads?: number;
-  }
+  import { formatStatus } from "$lib/utils";
+  import type { Process } from "$lib/types";
 
   export let show = false;
   export let process: Process | null = null;

@@ -27,7 +27,7 @@
         </button>
         <button class="btn-danger" on:click={onConfirm} disabled={isKilling}>
           {#if isKilling}
-            <div class="spinner" />
+            <div class="spinner"></div>
             <span>Ending...</span>
           {:else}
             End Process

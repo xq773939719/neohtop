@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="toolbar-spacer" />
+    <div class="toolbar-spacer"></div>
 
     <div class="pagination-controls">
       <select
@@ -104,6 +104,7 @@
       </button>
 
       {#if showColumnMenu}
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div class="column-menu" on:mouseleave={() => (showColumnMenu = false)}>
           {#each columns as column}
             <label class="column-option">
@@ -118,8 +119,6 @@
         </div>
       {/if}
     </div>
-
-    <!-- <div class="toolbar-spacer" /> -->
 
     <AppInfo />
   </div>

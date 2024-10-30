@@ -105,50 +105,6 @@ async fn kill_process(pid: u32, state: State<'_, AppState>) -> Result<bool, Stri
     }
 }
 
-#[tauri::command]
-async fn process_stop(pid: u32, state: State<'_, AppState>) -> Result<bool, String> {
-    let sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
-    if let Some(_process) = sys.process(sysinfo::Pid::from(pid as usize)) {
-        #[cfg(target_os = "macos")]
-        {
-            use std::process::Command;
-            Command::new("kill")
-                .args(["-STOP", &pid.to_string()])
-                .status()
-                .map_err(|e| e.to_string())?;
-            Ok(true)
-        }
-        #[cfg(not(target_os = "macos"))]
-        {
-            Ok(false)
-        }
-    } else {
-        Ok(false)
-    }
-}
-
-#[tauri::command]
-async fn process_continue(pid: u32, state: State<'_, AppState>) -> Result<bool, String> {
-    let sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
-    if let Some(_process) = sys.process(sysinfo::Pid::from(pid as usize)) {
-        #[cfg(target_os = "macos")]
-        {
-            use std::process::Command;
-            Command::new("kill")
-                .args(["-CONT", &pid.to_string()])
-                .status()
-                .map_err(|e| e.to_string())?;
-            Ok(true)
-        }
-        #[cfg(not(target_os = "macos"))]
-        {
-            Ok(false)
-        }
-    } else {
-        Ok(false)
-    }
-}
-
 fn main() {
     tauri::Builder::default()
         .manage(AppState {
@@ -157,9 +113,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_processes,
             get_system_stats,
-            kill_process,
-            process_stop,
-            process_continue
+            kill_process
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

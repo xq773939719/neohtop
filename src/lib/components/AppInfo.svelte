@@ -42,6 +42,7 @@
   </button>
 
   {#if showInfo}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="info-panel" on:mouseleave={() => (showInfo = false)}>
       <div class="info-content">
         <pre class="ascii-art">{ASCII_ART}</pre>
@@ -162,28 +163,8 @@
     color: var(--text);
   }
 
-  .link {
-    color: var(--blue);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .link:hover {
-    color: var(--sky);
-    text-decoration: underline;
-  }
-
   .detail-row span {
     color: var(--text);
     font-weight: 500;
-  }
-
-  a {
-    color: var(--blue);
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
   }
 </style>
