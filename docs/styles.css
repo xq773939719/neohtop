@@ -339,3 +339,17 @@ footer {
 .download-button {
   animation: fadeIn 0.5s ease-out;
 }
+
+.screenshot {
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.screenshot-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
