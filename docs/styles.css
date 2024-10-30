@@ -1,25 +1,30 @@
 :root {
   --primary: #2563eb;
+  --primary-light: #3b82f6;
   --text: #1f2937;
   --background: #ffffff;
   --card: #f3f4f6;
   --border: #e5e7eb;
+  --hover: #f9fafb;
+  --code-bg: #f1f5f9;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #3b82f6;
-    --text: #f3f4f6;
-    --background: #111827;
-    --card: #1f2937;
-    --border: #374151;
-  }
+[data-theme="dark"] {
+  --primary: #3b82f6;
+  --primary-light: #60a5fa;
+  --text: #f3f4f6;
+  --background: #111827;
+  --card: #1f2937;
+  --border: #374151;
+  --hover: #1f2937;
+  --code-bg: #1e293b;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -27,14 +32,69 @@ body {
   background: var(--background);
   color: var(--text);
   line-height: 1.6;
+  transition: background-color 0.3s, color 0.3s;
 }
 
+/* Header & Navigation */
+header {
+  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+nav a:hover {
+  background: var(--hover);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--hover);
+}
+
+/* Main Content */
 main {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
 }
 
+/* Sections */
+section {
+  margin: 6rem 0;
+  scroll-margin-top: 5rem;
+}
+
+/* Hero Section */
 .hero {
   text-align: center;
   padding: 4rem 0;
@@ -44,35 +104,49 @@ main {
   width: 120px;
   height: 120px;
   margin-bottom: 1rem;
+  transition: transform 0.3s;
 }
 
-h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+.logo:hover {
+  transform: scale(1.05);
 }
 
-.tagline {
-  font-size: 1.5rem;
-  color: var(--text);
-  opacity: 0.8;
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
 }
 
-.screenshot {
-  margin: 4rem 0;
-  text-align: center;
+.badge {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
 }
 
-.screenshot-img {
-  max-width: 100%;
+/* Features */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.feature {
+  background: var(--card);
+  padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  border: 1px solid var(--border);
 }
 
-.downloads {
-  text-align: center;
-  margin: 4rem 0;
+.feature:hover {
+  transform: translateY(-4px);
 }
 
+/* Download Section */
 .download-options {
   display: flex;
   gap: 1rem;
@@ -90,65 +164,150 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: transform 0.2s;
+  transition: all 0.2s;
+  position: relative;
 }
 
 .download-button:hover {
+  background: var(--primary-light);
   transform: translateY(-2px);
 }
 
-.version {
-  color: var(--text);
-  opacity: 0.6;
+.size {
+  font-size: 0.875rem;
+  opacity: 0.8;
 }
 
-.features {
-  margin: 4rem 0;
-}
-
-.feature-grid {
+/* Installation Steps */
+.install-steps {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
 }
 
-.feature {
+.step {
   background: var(--card);
   padding: 2rem;
   border-radius: 12px;
-  text-align: center;
+  position: relative;
+  border: 1px solid var(--border);
 }
 
-.emoji {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+.step-number {
+  position: absolute;
+  top: -1rem;
+  left: -1rem;
+  background: var(--primary);
+  color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Keyboard Shortcuts */
+.shortcuts {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 2rem;
+  border: 1px solid var(--border);
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.shortcut:hover {
+  background: var(--hover);
+}
+
+.key {
+  background: var(--code-bg);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+/* FAQ Section */
+.faq {
+  margin-top: 2rem;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0;
+}
+
+.faq-question {
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-answer {
+  margin-top: 1rem;
+  display: none;
+}
+
+.faq-item.active .faq-answer {
   display: block;
 }
 
+/* Footer */
 footer {
-  text-align: center;
-  margin-top: 4rem;
-  padding-top: 2rem;
   border-top: 1px solid var(--border);
+  margin-top: 6rem;
+  padding-top: 3rem;
 }
 
-.github-link {
-  color: var(--primary);
-  text-decoration: none;
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
-.github-link:hover {
-  text-decoration: underline;
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.copyright {
-  margin-top: 1rem;
+.footer-section a {
   color: var(--text);
-  opacity: 0.6;
+  text-decoration: none;
+  opacity: 0.8;
 }
 
+.footer-section a:hover {
+  opacity: 1;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
+  nav {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
   .download-options {
     flex-direction: column;
   }
@@ -156,4 +315,27 @@ footer {
   .feature-grid {
     grid-template-columns: 1fr;
   }
+
+  .install-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feature,
+.step,
+.download-button {
+  animation: fadeIn 0.5s ease-out;
 }
