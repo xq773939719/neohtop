@@ -3,6 +3,7 @@
 use sysinfo::{CpuExt, SystemExt, ProcessExt, System, PidExt, ProcessStatus};
 use tauri::State;
 use std::sync::Mutex;
+use users::{Users, UsersCache};
 
 struct AppState {
     sys: Mutex<System>,
@@ -35,33 +36,30 @@ async fn get_processes(state: State<'_, AppState>) -> Result<Vec<ProcessInfo>, S
     let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
     sys.refresh_all();
 
+    let users_cache = UsersCache::new();
+
     Ok(sys.processes()
         .iter()
         .map(|(pid, process)| {
-            let threads = if cfg!(target_os = "macos") {
-                use std::process::Command;
-                Command::new("ps")
-                    .args(["-o", "thcount=", "-p", &pid.as_u32().to_string()])
-                    .output()
-                    .ok()
-                    .and_then(|output| {
-                        String::from_utf8(output.stdout)
-                            .ok()
-                            .and_then(|s| s.trim().parse().ok())
-                    })
-            } else {
-                None
+            let status = match process.status() {
+                ProcessStatus::Run => "Running",
+                ProcessStatus::Sleep => {
+                    if process.cpu_usage() < 0.1 {
+                        "Idle"
+                    } else {
+                        "Sleeping"
+                    }
+                },
+                _ => "Unknown"
             };
 
-            let status = match process.status() {
-                ProcessStatus::Run => "R",      // Running
-                ProcessStatus::Sleep => "S",    // Sleeping
-                ProcessStatus::Idle => "I",     // Idle
-                ProcessStatus::Zombie => "Z",   // Zombie
-                ProcessStatus::Stop => "T",     // Stopped
-                ProcessStatus::Dead => "X",     // Dead
-                _ => "Unknown",
-            };
+            let user = process.user_id()
+                .and_then(|uid| {
+                    let uid_num = uid.to_string().parse::<u32>().unwrap_or(0);
+                    users_cache.get_user_by_uid(uid_num)
+                        .map(|user| format!("{} ({})", user.name().to_string_lossy(), uid_num))
+                })
+                .unwrap_or_else(|| "-".to_string());
 
             ProcessInfo {
                 pid: pid.as_u32(),
@@ -70,11 +68,9 @@ async fn get_processes(state: State<'_, AppState>) -> Result<Vec<ProcessInfo>, S
                 cpu_usage: process.cpu_usage(),
                 memory_usage: process.memory(),
                 status: status.to_string(),
-                user: process.user_id()
-                    .map(|uid| uid.to_string())
-                    .unwrap_or_else(|| "-".to_string()),
+                user,
                 command: process.cmd().join(" "),
-                threads,
+                threads: None,
             }
         })
         .collect())

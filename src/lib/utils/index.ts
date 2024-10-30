@@ -5,39 +5,24 @@ export interface ProcessStatus {
 }
 
 export const statusMap: Record<string, ProcessStatus> = {
-  "R": {  // Running
+  "Running": {
     label: "Running",
     emoji: "🏃",
     color: "var(--green)",
   },
-  "S": {  // Sleeping
+  "Sleeping": {
     label: "Sleeping",
     emoji: "😴",
     color: "var(--blue)",
   },
-  "I": {  // Idle
+  "Idle": {
     label: "Idle",
     emoji: "⌛",
     color: "var(--overlay0)",
   },
-  "Z": {  // Zombie
-    label: "Zombie",
-    emoji: "🧟",
-    color: "var(--red)",
-  },
-  "T": {  // Stopped
-    label: "Stopped",
-    emoji: "⛔",
-    color: "var(--yellow)",
-  },
-  "X": {  // Dead
-    label: "Dead",
-    emoji: "💀",
-    color: "var(--red)",
-  },
   "Unknown": {
     label: "Unknown",
-    emoji: "🤔",
+    emoji: "🫥",
     color: "var(--overlay0)",
   },
 };
