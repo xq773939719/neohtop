@@ -1,6 +1,11 @@
 <script lang="ts">
   import AppInfo from "./AppInfo.svelte";
+  import { statusMap } from "$lib/utils";
+  import Fa from "svelte-fa";
+  import { faFilter } from "@fortawesome/free-solid-svg-icons";
+
   export let searchTerm: string;
+  export let statusFilter: string = "all";
   export let itemsPerPage: number;
   export let currentPage: number;
   export let totalPages: number;
@@ -14,6 +19,17 @@
 
   const itemsPerPageOptions = [25, 50, 100, 250, 500];
   let showColumnMenu = false;
+
+  const statusOptions = [
+    { value: "all", label: "All Statuses" },
+    { value: "R", label: "🏃 Running" },
+    { value: "S", label: "😴 Sleeping" },
+    { value: "I", label: "⌛ Idle" },
+    { value: "Z", label: "🧟 Zombie" },
+    { value: "T", label: "⛔ Stopped" },
+    { value: "X", label: "💀 Dead" },
+    { value: "Unknown", label: "🤔 Unknown" },
+  ];
 
   function changePage(page: number) {
     if (page >= 1 && page <= totalPages) {
@@ -42,6 +58,14 @@
           </button>
         {/if}
       </div>
+    </div>
+    <div class="toolbar-group">
+      <span class="toolbar-label">Status:</span>
+      <select bind:value={statusFilter} class="select-input">
+        {#each statusOptions as option}
+          <option value={option.value}>{option.label}</option>
+        {/each}
+      </select>
     </div>
 
     <div class="toolbar-spacer"></div>
@@ -339,5 +363,53 @@
   .column-option input[type="checkbox"]:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .filter-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-select {
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface0);
+    border: 1px solid var(--surface1);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .status-select:hover {
+    background: var(--surface1);
+  }
+
+  select.btn-base {
+    appearance: none;
+    padding: 6px 28px 6px 12px;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--surface0)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+      no-repeat right 8px center;
+    border: 1px solid var(--surface1);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  select.btn-base:hover {
+    background-color: var(--surface1);
+  }
+
+  select.btn-base:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+
+  /* Ensure proper spacing between toolbar items */
+  .filter-box {
+    margin-left: 8px;
   }
 </style>

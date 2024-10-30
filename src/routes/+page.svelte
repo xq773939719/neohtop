@@ -24,6 +24,7 @@
   let showConfirmModal = false;
   let processToKill: Process | null = null;
   let isKilling = false;
+  let statusFilter = "all";
 
   let columns: Column[] = [
     { id: "name", label: "Process Name", visible: true, required: true },
@@ -57,9 +58,18 @@
     direction: "desc" as "asc" | "desc",
   };
 
-  $: filteredProcesses = processes.filter((process) =>
-    process.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  $: filteredProcesses = processes.filter((process) => {
+    const matchesSearch = searchTerm
+      ? process.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        process.command.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        process.pid.toString().includes(searchTerm)
+      : true;
+
+    const matchesStatus =
+      statusFilter === "all" ? true : process.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   $: sortedProcesses = filteredProcesses.sort((a, b) => {
     const aPin = pinnedProcesses.has(a.pid);
@@ -206,6 +216,7 @@
 
     <ToolBar
       bind:searchTerm
+      bind:statusFilter
       bind:itemsPerPage
       bind:currentPage
       {totalPages}
