@@ -176,11 +176,16 @@
   .search-input {
     width: 240px;
     padding: 6px 12px;
-    border: 1px solid var(--surface0);
+    border: 1px solid var(--surface1);
     border-radius: 6px;
-    font-size: 13px;
-    background-color: var(--crust);
+    font-size: 12px;
+    background-color: var(--surface0);
     color: var(--text);
+    transition: all 0.2s ease;
+  }
+
+  .search-input:hover {
+    background-color: var(--surface1);
   }
 
   .search-input:focus {
@@ -195,7 +200,7 @@
     border: 1px solid var(--surface1);
     border-radius: 6px;
     color: var(--text);
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;

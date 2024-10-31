@@ -11,12 +11,30 @@
       themes: ["catppuccin", "dracula", "monokaiPro", "tokyoNight"],
     },
     {
+      label: "Light",
+      themes: ["githubLight", "solarizedLight", "oneLight"],
+    },
+    {
       label: "Warm",
       themes: ["gruvbox"],
     },
     {
       label: "Cool",
       themes: ["nord", "oneDark"],
+    },
+    {
+      label: "Fun",
+      themes: [
+        "bubblegum",
+        "rosePine",
+        "cottonCandy",
+        "synthwave",
+        "candyfloss",
+      ],
+    },
+    {
+      label: "Retro",
+      themes: ["terminal", "amber", "ibmPC"],
     },
     {
       label: "Accessibility",
@@ -135,6 +153,29 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 100;
     min-width: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface2) var(--surface0);
+  }
+
+  .theme-menu::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .theme-menu::-webkit-scrollbar-track {
+    background: var(--surface0);
+    border-radius: 4px;
+  }
+
+  .theme-menu::-webkit-scrollbar-thumb {
+    background: var(--surface2);
+    border-radius: 4px;
+  }
+
+  .theme-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--overlay0);
   }
 
   .theme-option {
