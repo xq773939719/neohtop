@@ -20,9 +20,54 @@ export const statusMap: Record<string, ProcessStatus> = {
     emoji: "⌛",
     color: "var(--overlay0)",
   },
+  "Stopped": {
+    label: "Stopped",
+    emoji: "🛑",
+    color: "var(--red)",
+  },
+  "Zombie": {
+    label: "Zombie",
+    emoji: "🧟",
+    color: "var(--red)",
+  },
+  "Tracing": {
+    label: "Tracing",
+    emoji: "🔍",
+    color: "var(--yellow)",
+  },
+  "Dead": {
+    label: "Dead",
+    emoji: "💀",
+    color: "var(--red)",
+  },
+  "Wakekill": {
+    label: "Wake Kill",
+    emoji: "🔪",
+    color: "var(--red)",
+  },
+  "Waking": {
+    label: "Waking",
+    emoji: "🔄",
+    color: "var(--yellow)",
+  },
+  "Parked": {
+    label: "Parked",
+    emoji: "🫥",
+    color: "var(--overlay0)",
+    },
+  "LockBlocked": {
+    label: "Lock Blocked",
+    emoji: "🔒",
+    color: "var(--red)",
+  },
+  "UninterruptibleDiskSleep": {
+    label: "Disk Sleep",
+    emoji: "💤",
+    color: "var(--overlay0)",
+  },
   "Unknown": {
     label: "Unknown",
-    emoji: "🫥",
+    emoji: "❓",
     color: "var(--overlay0)",
   },
 };

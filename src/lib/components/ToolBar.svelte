@@ -19,13 +19,12 @@
 
   const itemsPerPageOptions = [25, 50, 100, 250, 500];
   let showColumnMenu = false;
-
   const statusOptions = [
     { value: "all", label: "All Statuses" },
-    { value: "Running", label: "🏃 Running" },
-    { value: "Sleeping", label: "😴 Sleeping" },
-    { value: "Idle", label: "⌛ Idle" },
-    { value: "Unknown", label: "🫥 Unknown" },
+    ...Object.values(statusMap).map((status) => ({
+      value: status.label,
+      label: status.label,
+    })),
   ];
 
   function changePage(page: number) {

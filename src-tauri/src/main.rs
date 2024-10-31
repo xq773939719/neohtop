@@ -43,14 +43,18 @@ async fn get_processes(state: State<'_, AppState>) -> Result<Vec<ProcessInfo>, S
         .map(|(pid, process)| {
             let status = match process.status() {
                 ProcessStatus::Run => "Running",
-                ProcessStatus::Sleep => {
-                    if process.cpu_usage() < 0.1 {
-                        "Idle"
-                    } else {
-                        "Sleeping"
-                    }
-                },
-                _ => "Unknown"
+                ProcessStatus::Sleep => "Sleeping",
+                ProcessStatus::Idle => "Idle",
+                ProcessStatus::Stop => "Stopped",
+                ProcessStatus::Zombie => "Zombie",
+                ProcessStatus::Tracing => "Tracing",
+                ProcessStatus::Dead => "Dead",
+                ProcessStatus::Wakekill => "Wake Kill",
+                ProcessStatus::Waking => "Waking",
+                ProcessStatus::Parked => "Parked",
+                ProcessStatus::LockBlocked => "Lock Blocked",
+                ProcessStatus::UninterruptibleDiskSleep => "Disk Sleep",
+                ProcessStatus::Unknown(_) => "Unknown"
             };
 
             let user = process.user_id()
