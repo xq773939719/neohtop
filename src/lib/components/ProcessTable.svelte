@@ -6,6 +6,7 @@
   } from "@fortawesome/free-solid-svg-icons";
   import Fa from "svelte-fa";
   import type { Process, Column } from "$lib/types";
+  import * as SimpleIcons from "simple-icons";
 
   export let processes: Process[];
   export let columns: Column[];
@@ -21,6 +22,47 @@
   function getSortIndicator(field: keyof Process) {
     if (sortConfig.field !== field) return "↕";
     return sortConfig.direction === "asc" ? "↑" : "↓";
+  }
+
+  function handleImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = getIconForProcess("default"); // Fallback to default icon
+    img.onerror = null; // Prevent infinite loop if default icon also fails
+  }
+
+  function getIconForProcess(name: string): string {
+    const cleanName = name
+      // Remove common app suffixes
+      .replace(/\.(app|exe)$/i, "")
+      // Replace separators with spaces
+      .replace(/[-_./\\]/g, " ")
+      // Get first word, trim, and lowercase
+      .split(" ")[0]
+      .trim()
+      .toLowerCase();
+
+    // Convert to SimpleIcons format (capitalize first word)
+    const formattedName =
+      cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+    const iconKey = `si${formattedName}`;
+    let simpleIcon = SimpleIcons[iconKey as keyof typeof SimpleIcons];
+
+    // Default icon if no match found
+    if (!simpleIcon) {
+      simpleIcon = SimpleIcons.siGhostery;
+    }
+
+    // Use theme color instead of brand color
+    const color = getComputedStyle(document.documentElement)
+      .getPropertyValue("--text")
+      .trim();
+
+    const svg =
+      typeof simpleIcon === "object" && "svg" in simpleIcon
+        ? simpleIcon.svg
+        : "";
+    const svgWithColor = svg.replace("<svg", `<svg fill="${color}"`);
+    return `data:image/svg+xml;base64,${btoa(svgWithColor)}`;
   }
 </script>
 
@@ -53,7 +95,19 @@
         >
           {#each columns.filter((col) => col.visible) as column}
             <td class="truncate">
-              {#if column.format}
+              {#if column.id === "name"}
+                <div class="name-cell">
+                  <img
+                    class="process-icon"
+                    src={getIconForProcess(process.name)}
+                    alt=""
+                    height="16"
+                    width="16"
+                    on:error={handleImageError}
+                  />
+                  <span class="process-name">{process.name}</span>
+                </div>
+              {:else if column.format}
                 {@html column.format(process[column.id])}
               {:else}
                 {process[column.id]}
@@ -344,5 +398,17 @@
 
   .btn-action:disabled::before {
     display: none;
+  }
+
+  .process-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+
+  .name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 </style>

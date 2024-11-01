@@ -73,12 +73,8 @@ export const statusMap: Record<string, ProcessStatus> = {
 };
 
 export function formatStatus(status: string): string {
-  // Log the incoming status for debugging
-  console.log('Process status:', status);
-  
   const processStatus = statusMap[status] || statusMap.Unknown;
   return `<span class="status-badge" style="--status-color: ${processStatus.color}">
-    <span class="status-emoji">${processStatus.emoji}</span>
     ${processStatus.label}
   </span>`;
 }
