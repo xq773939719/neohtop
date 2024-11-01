@@ -5,7 +5,7 @@
 </div>
 
 <div align="center">
-  <img src="screenshot.jpg" alt="NeoHtop Screenshot" width="800" />
+  <img src="https://github.com/Abdenasser/neohtop/blob/main/screenshot.jpg?raw=true" alt="NeoHtop Screenshot" width="800" />
 </div>
 
 ## Features
