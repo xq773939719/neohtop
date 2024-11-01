@@ -117,7 +117,7 @@ export const themes: Record<string, Theme> = {
       crust: '#13131a',
       text: '#a9b1d6',
       subtext0: '#9aa5ce',
-      subtext1: '#b4f9f8',
+      subtext1: '#9aa5ce',
       surface0: '#232433',
       surface1: '#2a2b3d',
       surface2: '#32344a',
