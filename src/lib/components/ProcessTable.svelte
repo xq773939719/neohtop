@@ -31,17 +31,37 @@
   }
 
   function getIconForProcess(name: string): string {
+    // First try with com.company.something pattern
+    if (name.startsWith("com.")) {
+      const companyName = name.replace(/^com\.([^.]+)\..*$/, "$1");
+      const formattedCompanyName =
+        companyName.charAt(0).toUpperCase() + companyName.slice(1);
+      const companyIconKey = `si${formattedCompanyName}`;
+      const companyIcon =
+        SimpleIcons[companyIconKey as keyof typeof SimpleIcons];
+
+      if (companyIcon) {
+        // Use theme color instead of brand color
+        const color = getComputedStyle(document.documentElement)
+          .getPropertyValue("--text")
+          .trim();
+        const svg =
+          typeof companyIcon === "object" && "svg" in companyIcon
+            ? companyIcon.svg
+            : "";
+        const svgWithColor = svg.replace("<svg", `<svg fill="${color}"`);
+        return `data:image/svg+xml;base64,${btoa(svgWithColor)}`;
+      }
+    }
+
+    // If no company icon found, fall back to original implementation
     const cleanName = name
-      // Remove common app suffixes
       .replace(/\.(app|exe)$/i, "")
-      // Replace separators with spaces
       .replace(/[-_./\\]/g, " ")
-      // Get first word, trim, and lowercase
       .split(" ")[0]
       .trim()
       .toLowerCase();
 
-    // Convert to SimpleIcons format (capitalize first word)
     const formattedName =
       cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
     const iconKey = `si${formattedName}`;
