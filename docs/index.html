@@ -21,7 +21,7 @@
   <meta name="twitter:title" content="NeoHtop - Modern System Monitor">
   <meta name="twitter:description" content="A beautiful, efficient system monitor built with Rust and Svelte.">
   <meta name="twitter:image" content="https://github.com/Abdenasser/neohtop/raw/main/app-icon.png">
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" href="favicon.ico">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="preload" href="https://github.com/Abdenasser/neohtop/raw/main/app-icon.png" as="image">
@@ -65,6 +65,37 @@
             <span class="tech-badge">Rust</span>
             <span class="tech-badge">Tauri</span>
             <span class="tech-badge">Svelte</span>
+          </div>
+          <div class="badges">
+            <div class="ph-badge-placeholder">
+              <a href="https://www.producthunt.com/posts/neohtop?utm_source=badge-featured" target="_blank"
+                rel="noopener" class="coming-soon-badge">
+                📌 Launching tomorrow on Product Hunt
+              </a>
+
+              <script>
+                const launchDate = new Date('2024-11-04 00:00:00 PST'); // Replace with your launch date
+
+                function updateBadge() {
+                  if (Date.now() >= launchDate) {
+                    document.querySelector('.coming-soon-badge').outerHTML = `
+                      <a href="https://www.producthunt.com/posts/neohtop?utm_source=badge-featured" 
+                         target="_blank" 
+                         rel="noopener">
+                        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=neohtop&theme=light" 
+                             alt="NeoHtop - Modern system monitor for macOS | Product Hunt"
+                             style="width: 250px; height: 54px;" 
+                             width="250" 
+                             height="54" />
+                      </a>
+                    `;
+                  }
+                }
+
+                updateBadge();
+                setInterval(updateBadge, 60000); // Check every minute
+              </script>
+            </div>
           </div>
         </div>
         <div class="hero-image">

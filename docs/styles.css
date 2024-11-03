@@ -247,6 +247,13 @@ section {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
+
+  /* Centered only on tablets and smaller screens */
+  @media (min-width: 1024px) {
+    justify-content: flex-start;
+    /* Align to the start on larger screens */
+  }
+
   margin-top: 1rem;
 }
 
@@ -961,4 +968,38 @@ footer {
 
 .nav-links a:hover::after {
   width: 100%;
+}
+
+/* Add this to your CSS */
+.ph-badge {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.ph-badge:hover {
+  transform: translateY(-2px);
+}
+
+/* If you want to adjust for dark mode */
+[data-theme="dark"] .ph-badge img {
+  filter: invert(1);
+  /* Optional: if you want to invert colors in dark mode */
+}
+
+.coming-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #ff6154;
+  /* Product Hunt color */
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+
+.coming-soon-badge:hover {
+  transform: translateY(-2px);
 }
