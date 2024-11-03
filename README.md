@@ -55,3 +55,12 @@ npm run tauri build
 
 # Build universal macOS binary
 ./build-universal.sh
+```
+
+## Support
+
+If you find this project helpful, consider buying me a coffee:
+
+<a href="https://www.buymeacoffee.com/abdenasser">
+  <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=abdenasser&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" />
+</a>
