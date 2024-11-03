@@ -1,7 +1,14 @@
 <div align="center">
   <img src="app-icon.png" alt="NeoHtop Logo" width="120" />
   <h1>NeoHtop</h1>
-  <p>A modern, cross-platform system monitor built with Tauri, Rust, and Svelte.</p>
+  <p>A modern, cross-platform system monitor built on top of Svelte, Rust and Tauri.</p>
+
+  [![License](https://img.shields.io/github/license/Abdenasser/neohtop)](https://github.com/Abdenasser/neohtop/blob/main/LICENSE)
+  [![GitHub stars](https://img.shields.io/github/stars/Abdenasser/neohtop)](https://github.com/Abdenasser/neohtop/stargazers)
+  [![GitHub issues](https://img.shields.io/github/issues/Abdenasser/neohtop)](https://github.com/Abdenasser/neohtop/issues)
+  [![GitHub release](https://img.shields.io/github/v/release/Abdenasser/neohtop)](https://github.com/Abdenasser/neohtop/releases)
+  <!-- notorized by apple -->
+  [![Notarized by Apple](https://img.shields.io/badge/Release_Notarized_by_Apple-000000?style=flat-square&logo=apple&logoColor=white)](https://developer.apple.com/support/notarization/)
 </div>
 
 <div align="center">
