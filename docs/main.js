@@ -30,23 +30,19 @@ prefersDark.addEventListener('change', (e) => {
 });
 
 // FAQ Accordion
-document.querySelectorAll('.faq-question').forEach(question => {
-  question.addEventListener('click', () => {
-    const item = question.parentElement;
-    const isActive = item.classList.contains('active');
+document.querySelectorAll('.faq-question').forEach(button => {
+  button.addEventListener('click', () => {
+    const faqItem = button.parentElement;
+    const isActive = faqItem.classList.contains('active');
 
     // Close all FAQ items
     document.querySelectorAll('.faq-item').forEach(item => {
       item.classList.remove('active');
-      const answer = item.querySelector('.faq-answer');
-      answer.style.maxHeight = null;
     });
 
-    // Open clicked item if it wasn't active
+    // Toggle clicked item
     if (!isActive) {
-      item.classList.add('active');
-      const answer = item.querySelector('.faq-answer');
-      answer.style.maxHeight = answer.scrollHeight + 'px';
+      faqItem.classList.add('active');
     }
   });
 });

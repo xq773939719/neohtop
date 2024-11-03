@@ -29,85 +29,81 @@
 </head>
 
 <body>
-  <header>
+  <header class="glass-nav">
     <nav>
-      <a href="#home">Home</a>
-      <a href="#features">Features</a>
-      <a href="#download">Download</a>
-      <a href="#install">Install</a>
-      <a href="#changelog">Changelog</a>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
-        <span class="theme-icon">🌙</span>
-      </button>
+      <div class="logo-container">
+        <img src="https://github.com/Abdenasser/neohtop/raw/main/app-icon.png" alt="NeoHtop" class="nav-logo">
+        <span class="nav-brand">NeoHtop</span>
+      </div>
+      <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+        <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
     </nav>
   </header>
 
   <main>
     <section id="home" class="hero">
-      <img src="https://github.com/Abdenasser/neohtop/raw/main/app-icon.png" alt="NeoHtop Logo" class="logo">
-      <h1>NeoHtop</h1>
-      <p class="tagline">A modern, cross-platform system monitor</p>
-      <div class="badges">
-        <span class="badge">Rust</span>
-        <span class="badge">Tauri</span>
-        <span class="badge">Svelte</span>
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="gradient-text">Monitor Your System<br>With Style</h1>
+          <p class="hero-subtitle">A beautiful, lightning-fast system monitor built with Rust and Svelte. Experience
+            real-time performance monitoring like never before.</p>
+          <div class="hero-cta">
+            <a href="#download" class="primary-button">Download Now</a>
+            <a href="https://github.com/abdenasser/neohtop" class="secondary-button">
+              View on GitHub
+            </a>
+          </div>
+          <div class="tech-stack">
+            <span class="tech-badge">Rust</span>
+            <span class="tech-badge">Tauri</span>
+            <span class="tech-badge">Svelte</span>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="https://github.com/Abdenasser/neohtop/raw/main/screenshot.jpg" alt="NeoHtop Interface"
+            class="floating-screenshot">
+        </div>
       </div>
     </section>
 
-    <div class="badges">
-      <a href="https://github.com/Abdenasser/neohtop/blob/main/LICENSE" aria-label="License">
-        <img src="https://img.shields.io/github/license/Abdenasser/neohtop" alt="License">
-      </a>
-      <a href="https://github.com/Abdenasser/neohtop/stargazers" aria-label="GitHub stars">
-        <img src="https://img.shields.io/github/stars/Abdenasser/neohtop" alt="GitHub stars">
-      </a>
-      <a href="https://github.com/Abdenasser/neohtop/issues" aria-label="GitHub issues">
-        <img src="https://img.shields.io/github/issues/Abdenasser/neohtop" alt="GitHub issues">
-      </a>
-      <a href="https://github.com/Abdenasser/neohtop/releases" aria-label="GitHub release">
-        <img src="https://img.shields.io/github/v/release/Abdenasser/neohtop" alt="GitHub release">
-      </a>
-      <a href="https://developer.apple.com/support/notarization/" aria-label="Notarized by Apple">
-        <img src="https://img.shields.io/badge/Notarized_by_Apple-000000?style=flat-square&logo=apple&logoColor=white"
-          alt="Notarized by Apple">
-      </a>
-    </div>
-
-    <section class="screenshot">
-      <img src="https://github.com/Abdenasser/neohtop/raw/main/screenshot.jpg" alt="NeoHtop Screenshot"
-        class="screenshot-img" loading="lazy">
-    </section>
-
     <section id="features" class="features">
-      <h2>Features</h2>
+      <h2 class="section-title">Why Choose NeoHtop?</h2>
       <div class="feature-grid">
-        <div class="feature">
-          <span class="emoji">🚀</span>
+        <div class="feature-card">
+          <div class="feature-icon">🚀</div>
           <h3>Real-time Monitoring</h3>
           <p>Track system processes in real-time with minimal resource usage</p>
         </div>
-        <div class="feature">
-          <span class="emoji">🎨</span>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
           <h3>Modern UI</h3>
           <p>Beautiful interface with automatic dark/light theme detection</p>
         </div>
-        <div class="feature">
-          <span class="emoji">🔍</span>
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
           <h3>Smart Search</h3>
           <p>Quick process search with advanced filtering options</p>
         </div>
-        <div class="feature">
-          <span class="emoji">📌</span>
+        <div class="feature-card">
+          <div class="feature-icon">📌</div>
           <h3>Process Pinning</h3>
           <p>Keep important processes in view for easy monitoring</p>
         </div>
-        <div class="feature">
-          <span class="emoji">⚡️</span>
+        <div class="feature-card">
+          <div class="feature-icon">⚡️</div>
           <h3>Resource Efficient</h3>
           <p>Built with Rust for optimal performance and low memory usage</p>
         </div>
-        <div class="feature">
-          <span class="emoji">🛠</span>
+        <div class="feature-card">
+          <div class="feature-icon">🛠</div>
           <h3>Process Management</h3>
           <p>View and manage processes with detailed information</p>
         </div>
@@ -115,18 +111,27 @@
     </section>
 
     <section id="download" class="downloads">
-      <h2>Download for macOS</h2>
-      <div class="download-options">
-        <a href="https://github.com/Abdenasser/neohtop/releases/download/v1.0.1/NeoHtop-intel.dmg"
-          class="download-button">
-          <span class="icon">💻</span>
-          Intel Mac
-        </a>
-        <a href="https://github.com/Abdenasser/neohtop/releases/download/v1.0.1/NeoHtop-silicon.dmg"
-          class="download-button">
-          <span class="icon">🍎</span>
-          Apple Silicon
-        </a>
+      <div class="download-container glass-card">
+        <h2>Download for macOS</h2>
+        <p class="download-subtitle">Choose the version that matches your Mac</p>
+        <div class="download-options">
+          <a href="https://github.com/Abdenasser/neohtop/releases/download/v1.0.1/NeoHtop-intel.dmg"
+            class="download-button intel">
+            <span class="icon">💻</span>
+            <div class="button-text">
+              <span class="primary">Intel Mac</span>
+              <span class="secondary">For Intel-based Macs</span>
+            </div>
+          </a>
+          <a href="https://github.com/Abdenasser/neohtop/releases/download/v1.0.1/NeoHtop-silicon.dmg"
+            class="download-button silicon">
+            <span class="icon">🍎</span>
+            <div class="button-text">
+              <span class="primary">Apple Silicon</span>
+              <span class="secondary">For M1/M2/M3 Macs</span>
+            </div>
+          </a>
+        </div>
       </div>
     </section>
 
@@ -157,26 +162,67 @@
     </section>
 
     <section id="faq" class="faq">
-      <h2>Frequently Asked Questions</h2>
+      <h2 class="section-title">Frequently Asked Questions</h2>
       <div class="faq-list">
         <div class="faq-item">
-          <div class="faq-question">
-            How does NeoHtop compare to Activity Monitor?
-            <span class="arrow">▼</span>
-          </div>
+          <button class="faq-question">
+            <span class="question-text">How does NeoHtop compare to Activity Monitor?</span>
+            <span class="faq-icon">⌄</span>
+          </button>
           <div class="faq-answer">
-            NeoHtop offers a modern interface with additional features like process pinning, smart search, and themes
-            while maintaining high performance through its Rust backend.
+            <p>NeoHtop offers a modern interface with additional features like process pinning, smart search, and themes
+              while maintaining high performance through its Rust backend. It's designed to be more user-friendly and
+              efficient than traditional system monitors.</p>
           </div>
         </div>
+
         <div class="faq-item">
-          <div class="faq-question">
-            Is NeoHtop resource intensive?
-            <span class="arrow">▼</span>
-          </div>
+          <button class="faq-question">
+            <span class="question-text">Is NeoHtop resource intensive?</span>
+            <span class="faq-icon">⌄</span>
+          </button>
           <div class="faq-answer">
-            No, NeoHtop is built with Rust and optimized for minimal resource usage, typically using less than 1% CPU
-            and minimal memory.
+            <p>No, NeoHtop is built with Rust and optimized for minimal resource usage, typically using less than 1% CPU
+              and minimal memory. It's designed to be lightweight while monitoring your system.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span class="question-text">Does NeoHtop work on all macOS versions?</span>
+            <span class="faq-icon">⌄</span>
+          </button>
+          <div class="faq-answer">
+            <p>NeoHtop supports macOS 10.15 (Catalina) and newer versions. It's optimized for both Intel and Apple
+              Silicon Macs, with native support for both architectures.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span class="question-text">Can I customize the interface?</span>
+            <span class="faq-icon">⌄</span>
+          </button>
+          <div class="faq-answer">
+            <p>Yes, NeoHtop offers various customization options including:
+            <ul>
+              <li>Dark/Light theme switching</li>
+              <li>Customizable columns and metrics</li>
+              <li>Adjustable refresh rates</li>
+              <li>Process grouping options</li>
+            </ul>
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span class="question-text">Is NeoHtop open source?</span>
+            <span class="faq-icon">⌄</span>
+          </button>
+          <div class="faq-answer">
+            <p>Yes, NeoHtop is completely open source and available on GitHub. You can contribute to the project, report
+              issues, or suggest new features through our GitHub repository.</p>
           </div>
         </div>
       </div>
@@ -184,14 +230,66 @@
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script src="main.js"></script>
-
-    <footer>
-      <p>
-        <a href="https://github.com/abdenasser/neohtop" class="github-link">View on GitHub</a>
-      </p>
-      <p class="copyright">© 2024 NeoHtop</p>
-    </footer>
   </main>
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>NeoHtop</h3>
+        <p class="footer-description">
+          A modern system monitor built with Rust and Svelte.
+          Open source and free to use.
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <h4>Links</h4>
+        <ul class="footer-links">
+          <li>
+            <a href="https://github.com/abdenasser/neohtop" target="_blank" rel="noopener">
+              <span class="icon">📦</span> GitHub Repository
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/abdenasser" target="_blank" rel="noopener">
+              <span class="icon">👨‍💻</span> Creator
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/abdenasser/neohtop/issues" target="_blank" rel="noopener">
+              <span class="icon">🐛</span> Report Issue
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>Tech Stack</h4>
+        <ul class="tech-stack-list">
+          <li>
+            <a href="https://www.rust-lang.org/" target="_blank" rel="noopener">
+              <span class="icon">🦀</span> Rust
+            </a>
+          </li>
+          <li>
+            <a href="https://tauri.app/" target="_blank" rel="noopener">
+              <span class="icon">⚡</span> Tauri
+            </a>
+          </li>
+          <li>
+            <a href="https://svelte.dev/" target="_blank" rel="noopener">
+              <span class="icon">🎯</span> Svelte
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>Made with <span class="heart">❤️</span> and <span class="coffee">☕</span> by
+        <a href="https://github.com/abdenasser" target="_blank" rel="noopener">Abdenasser</a>
+      </p>
+    </div>
+  </footer>
 </body>
 
 </html>
