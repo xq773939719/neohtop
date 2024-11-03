@@ -1003,3 +1003,33 @@ footer {
 .coming-soon-badge:hover {
   transform: translateY(-2px);
 }
+
+.trust-badge {
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.verified-icon {
+  color: #34C759;
+  font-weight: bold;
+}
+
+.verified-text {
+  color: var(--text-color);
+}
+
+.learn-more {
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-left: 0.5rem;
+}
+
+.learn-more:hover {
+  text-decoration: underline;
+}
