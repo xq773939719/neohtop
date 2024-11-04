@@ -3,10 +3,21 @@
 use sysinfo::{CpuExt, SystemExt, ProcessExt, System, PidExt, ProcessStatus};
 use tauri::State;
 use std::sync::Mutex;
-use users::{Users, UsersCache};
+use std::time;
+use std::collections::HashMap;
+use std::time::Instant;
 
 struct AppState {
     sys: Mutex<System>,
+    process_cache: Mutex<HashMap<u32, ProcessStaticInfo>>,
+    last_update: Mutex<Instant>,
+}
+
+#[derive(Clone)]
+struct ProcessStaticInfo {
+    name: String,
+    command: String,
+    user: String,
 }
 
 #[derive(serde::Serialize)]
@@ -34,48 +45,42 @@ struct SystemStats {
 #[tauri::command]
 async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, SystemStats), String> {
     let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
-    sys.refresh_processes();
-    sys.refresh_memory();
-    sys.refresh_cpu();
-
-    let users_cache = UsersCache::new();
+    let mut process_cache = state.process_cache.lock().map_err(|_| "Failed to lock process cache")?;
+    
+    // Batch refresh system information
+    sys.refresh_all();
 
     let processes = sys.processes()
         .iter()
         .map(|(pid, process)| {
+            let pid_u32 = pid.as_u32();
+            
+            // Get or update cache for static process info
+            let static_info = process_cache.entry(pid_u32).or_insert_with(|| {
+                ProcessStaticInfo {
+                    name: process.name().to_string(),
+                    command: process.cmd().join(" "),
+                    user: process.user_id()
+                        .map_or_else(|| "-".to_string(), |uid| uid.to_string()),
+                }
+            });
+
             let status = match process.status() {
                 ProcessStatus::Run => "Running",
                 ProcessStatus::Sleep => "Sleeping",
                 ProcessStatus::Idle => "Idle",
-                ProcessStatus::Stop => "Stopped",
-                ProcessStatus::Zombie => "Zombie",
-                ProcessStatus::Tracing => "Tracing",
-                ProcessStatus::Dead => "Dead",
-                ProcessStatus::Wakekill => "Wake Kill",
-                ProcessStatus::Waking => "Waking",
-                ProcessStatus::Parked => "Parked",
-                ProcessStatus::LockBlocked => "Lock Blocked",
-                ProcessStatus::UninterruptibleDiskSleep => "Disk Sleep",
-                ProcessStatus::Unknown(_) => "Unknown"
+                _ => "Unknown"
             };
 
-            let user = process.user_id()
-                .and_then(|uid| {
-                    let uid_num = uid.to_string().parse::<u32>().unwrap_or(0);
-                    users_cache.get_user_by_uid(uid_num)
-                        .map(|user| format!("{} ({})", user.name().to_string_lossy(), uid_num))
-                })
-                .unwrap_or_else(|| "-".to_string());
-
             ProcessInfo {
-                pid: pid.as_u32(),
+                pid: pid_u32,
                 ppid: process.parent().unwrap_or(sysinfo::Pid::from(0)).as_u32(),
-                name: process.name().to_string(),
+                name: static_info.name.clone(),
                 cpu_usage: process.cpu_usage(),
                 memory_usage: process.memory(),
                 status: status.to_string(),
-                user,
-                command: process.cmd().join(" "),
+                user: static_info.user.clone(),
+                command: static_info.command.clone(),
                 threads: None,
             }
         })
@@ -107,6 +112,8 @@ fn main() {
     tauri::Builder::default()
         .manage(AppState {
             sys: Mutex::new(System::new_all()),
+            process_cache: Mutex::new(HashMap::new()),
+            last_update: Mutex::new(Instant::now()),
         })
         .invoke_handler(tauri::generate_handler![
             get_processes,
