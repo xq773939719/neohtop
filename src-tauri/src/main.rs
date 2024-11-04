@@ -92,8 +92,8 @@ async fn get_system_stats(state: State<'_, AppState>) -> Result<SystemStats, Str
         cpu_usage: sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect(),
         memory_total: sys.total_memory(),
         memory_used: sys.used_memory(),
-        memory_free: sys.free_memory(),
-        memory_cached: sys.available_memory(),//TODO:
+        memory_free: sys.available_memory(),
+        memory_cached: 0,//TODO:
         uptime: sys.uptime(),
         load_avg: [load_avg.one, load_avg.five, load_avg.fifteen],
     })
