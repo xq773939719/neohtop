@@ -27,6 +27,8 @@ struct SystemStats {
     cpu_usage: Vec<f32>,
     memory_total: u64,
     memory_used: u64,
+    memory_free:u64,
+    memory_cached: u64,
     uptime: u64,
     load_avg: [f64; 3],
 }
@@ -90,6 +92,8 @@ async fn get_system_stats(state: State<'_, AppState>) -> Result<SystemStats, Str
         cpu_usage: sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect(),
         memory_total: sys.total_memory(),
         memory_used: sys.used_memory(),
+        memory_free: sys.free_memory(),
+        memory_cached: sys.available_memory(),//TODO:
         uptime: sys.uptime(),
         load_avg: [load_avg.one, load_avg.five, load_avg.fifteen],
     })
