@@ -17,7 +17,7 @@
   let searchTerm = "";
   let isLoading = true;
   let currentPage = 1;
-  let itemsPerPage = 50;
+  let itemsPerPage = 15;
   let pinnedProcesses: Set<number> = new Set();
   let selectedProcess: Process | null = null;
   let showInfoModal = false;
@@ -25,6 +25,8 @@
   let processToKill: Process | null = null;
   let isKilling = false;
   let statusFilter = "all";
+  let refreshRate = 5000;
+  let isFrozen = false;
 
   let columns: Column[] = [
     { id: "name", label: "Process Name", visible: true, required: true },
@@ -48,7 +50,6 @@
       visible: true,
       format: (v) => (v / (1024 * 1024)).toFixed(1) + " MB",
     },
-    { id: "threads", label: "Threads", visible: false },
     { id: "command", label: "Command", visible: false },
     { id: "ppid", label: "Parent PID", visible: false },
   ];
@@ -97,6 +98,15 @@
     // Reset to first page when filtering or changing items per page
     if (searchTerm || itemsPerPage) {
       currentPage = 1;
+    }
+  }
+
+  $: {
+    if (intervalId) clearInterval(intervalId);
+    if (!isFrozen) {
+      intervalId = setInterval(() => {
+        getProcesses();
+      }, refreshRate);
     }
   }
 
@@ -178,10 +188,6 @@
       isLoading = false;
     }
 
-    intervalId = setInterval(() => {
-      getProcesses();
-    }, 2000);
-
     themeStore.init();
   });
 
@@ -208,6 +214,8 @@
       bind:statusFilter
       bind:itemsPerPage
       bind:currentPage
+      bind:refreshRate
+      bind:isFrozen
       {totalPages}
       totalResults={filteredProcesses.length}
       bind:columns

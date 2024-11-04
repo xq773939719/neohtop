@@ -1,8 +1,6 @@
 <script lang="ts">
   import AppInfo from "./AppInfo.svelte";
   import { statusMap } from "$lib/utils";
-  import Fa from "svelte-fa";
-  import { faFilter } from "@fortawesome/free-solid-svg-icons";
 
   export let searchTerm: string;
   export let statusFilter: string = "all";
@@ -16,8 +14,10 @@
     visible: boolean;
     required?: boolean;
   }>;
+  export let refreshRate: number;
+  export let isFrozen: boolean;
 
-  const itemsPerPageOptions = [25, 50, 100, 250, 500];
+  const itemsPerPageOptions = [15, 25, 50, 100, 250, 500];
   let showColumnMenu = false;
   const statusOptions = [
     { value: "all", label: "All Statuses" },
@@ -25,6 +25,14 @@
       value: status.label,
       label: status.label,
     })),
+  ];
+
+  const refreshRateOptions = [
+    { value: 1000, label: "1s" },
+    { value: 2000, label: "2s" },
+    { value: 5000, label: "5s" },
+    { value: 10000, label: "10s" },
+    { value: 30000, label: "30s" },
   ];
 
   function changePage(page: number) {
@@ -137,6 +145,32 @@
           {/each}
         </div>
       {/if}
+    </div>
+
+    <div class="toolbar-group">
+      <div class="refresh-controls">
+        <select
+          class="select-input"
+          bind:value={refreshRate}
+          disabled={isFrozen}
+        >
+          {#each refreshRateOptions as option}
+            <option value={option.value}>{option.label} refresh</option>
+          {/each}
+        </select>
+        <button
+          class="btn-action"
+          class:frozen={isFrozen}
+          on:click={() => (isFrozen = !isFrozen)}
+          title={isFrozen ? "Resume Updates" : "Pause Updates"}
+        >
+          {#if isFrozen}
+            ▶
+          {:else}
+            ⏸
+          {/if}
+        </button>
+      </div>
     </div>
 
     <AppInfo />
@@ -362,6 +396,51 @@
 
   .column-option input[type="checkbox"]:disabled {
     opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .refresh-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: var(--surface0);
+    color: var(--text);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-action:hover {
+    background: var(--surface1);
+  }
+
+  .btn-action.frozen {
+    background: var(--blue);
+    color: var(--base);
+  }
+
+  .select-input {
+    height: 28px;
+    padding: 0 8px;
+    border: 1px solid var(--surface1);
+    border-radius: 6px;
+    background: var(--surface0);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .select-input:disabled {
+    opacity: 0.7;
     cursor: not-allowed;
   }
 </style>

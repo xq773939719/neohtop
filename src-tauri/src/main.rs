@@ -3,14 +3,11 @@
 use sysinfo::{CpuExt, SystemExt, ProcessExt, System, PidExt, ProcessStatus};
 use tauri::State;
 use std::sync::Mutex;
-use std::time;
 use std::collections::HashMap;
-use std::time::Instant;
 
 struct AppState {
     sys: Mutex<System>,
     process_cache: Mutex<HashMap<u32, ProcessStaticInfo>>,
-    last_update: Mutex<Instant>,
 }
 
 #[derive(Clone)]
@@ -113,7 +110,6 @@ fn main() {
         .manage(AppState {
             sys: Mutex::new(System::new_all()),
             process_cache: Mutex::new(HashMap::new()),
-            last_update: Mutex::new(Instant::now()),
         })
         .invoke_handler(tauri::generate_handler![
             get_processes,
