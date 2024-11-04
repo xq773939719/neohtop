@@ -69,32 +69,12 @@
           <div class="badges">
             <div class="ph-badge-placeholder">
               <a href="https://www.producthunt.com/posts/neohtop?utm_source=badge-featured" target="_blank"
-                rel="noopener" class="coming-soon-badge">
-                📌 Launching tomorrow on Product Hunt
+                rel="noopener">
+                <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=neohtop&theme=light"
+                  alt="NeoHtop - Modern system monitor for macOS | Product Hunt" style="width: 250px; height: 54px;"
+                  width="250" height="54" />
               </a>
 
-              <script>
-                const launchDate = new Date('2024-11-04 00:00:00 PST'); // Replace with your launch date
-
-                function updateBadge() {
-                  if (Date.now() >= launchDate) {
-                    document.querySelector('.coming-soon-badge').outerHTML = `
-                      <a href="https://www.producthunt.com/posts/neohtop?utm_source=badge-featured" 
-                         target="_blank" 
-                         rel="noopener">
-                        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=neohtop&theme=light" 
-                             alt="NeoHtop - Modern system monitor for macOS | Product Hunt"
-                             style="width: 250px; height: 54px;" 
-                             width="250" 
-                             height="54" />
-                      </a>
-                    `;
-                  }
-                }
-
-                updateBadge();
-                setInterval(updateBadge, 60000); // Check every minute
-              </script>
             </div>
             <script data-name="BMC-Widget" data-cfasync="false"
               src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="abdenasser"
