@@ -87,13 +87,14 @@ async fn get_system_stats(state: State<'_, AppState>) -> Result<SystemStats, Str
     let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
     sys.refresh_all();
 
+
     let load_avg = sys.load_average();
     Ok(SystemStats {
         cpu_usage: sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect(),
         memory_total: sys.total_memory(),
         memory_used: sys.used_memory(),
         memory_free: sys.available_memory(),
-        memory_cached: 0,//TODO:
+        memory_cached: sys.free_memory(),//TODO:
         uptime: sys.uptime(),
         load_avg: [load_avg.one, load_avg.five, load_avg.fifteen],
     })
