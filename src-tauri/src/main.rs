@@ -32,13 +32,15 @@ struct SystemStats {
 }
 
 #[tauri::command]
-async fn get_processes(state: State<'_, AppState>) -> Result<Vec<ProcessInfo>, String> {
+async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, SystemStats), String> {
     let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
-    sys.refresh_all();
+    sys.refresh_processes();
+    sys.refresh_memory();
+    sys.refresh_cpu();
 
     let users_cache = UsersCache::new();
 
-    Ok(sys.processes()
+    let processes = sys.processes()
         .iter()
         .map(|(pid, process)| {
             let status = match process.status() {
@@ -77,22 +79,18 @@ async fn get_processes(state: State<'_, AppState>) -> Result<Vec<ProcessInfo>, S
                 threads: None,
             }
         })
-        .collect())
-}
-
-#[tauri::command]
-async fn get_system_stats(state: State<'_, AppState>) -> Result<SystemStats, String> {
-    let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
-    sys.refresh_all();
+        .collect();
 
     let load_avg = sys.load_average();
-    Ok(SystemStats {
+    let system_stats = SystemStats {
         cpu_usage: sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect(),
         memory_total: sys.total_memory(),
         memory_used: sys.used_memory(),
         uptime: sys.uptime(),
         load_avg: [load_avg.one, load_avg.five, load_avg.fifteen],
-    })
+    };
+
+    Ok((processes, system_stats))
 }
 
 #[tauri::command]
@@ -112,7 +110,6 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             get_processes,
-            get_system_stats,
             kill_process
         ])
         .run(tauri::generate_context!())

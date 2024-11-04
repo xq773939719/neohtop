@@ -102,20 +102,10 @@
 
   async function getProcesses() {
     try {
-      processes = await invoke<Process[]>("get_processes");
+      const result = await invoke<[Process[], SystemStats]>("get_processes");
+      processes = result[0];
+      systemStats = result[1];
       error = null;
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        error = e.message;
-      } else {
-        error = String(e);
-      }
-    }
-  }
-
-  async function getSystemStats() {
-    try {
-      systemStats = await invoke<SystemStats>("get_system_stats");
     } catch (e: unknown) {
       if (e instanceof Error) {
         error = e.message;
@@ -183,14 +173,13 @@
 
   onMount(async () => {
     try {
-      await Promise.all([getProcesses(), getSystemStats()]);
+      await Promise.all([getProcesses()]);
     } finally {
       isLoading = false;
     }
 
     intervalId = setInterval(() => {
       getProcesses();
-      getSystemStats();
     }, 2000);
 
     themeStore.init();
