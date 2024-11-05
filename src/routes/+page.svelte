@@ -25,7 +25,7 @@
   let processToKill: Process | null = null;
   let isKilling = false;
   let statusFilter = "all";
-  let refreshRate = 5000;
+  let refreshRate = 1000;
   let isFrozen = false;
 
   let columns: Column[] = [

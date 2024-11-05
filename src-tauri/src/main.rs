@@ -43,28 +43,67 @@ struct SystemStats {
 
 #[tauri::command]
 async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, SystemStats), String> {
-    let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
-    let mut process_cache = state.process_cache.lock().map_err(|_| "Failed to lock process cache")?;
+    let processes_data;
+    let system_stats;
     
-    // Batch refresh system information
-    sys.refresh_all();
+    // Scope for system lock
+    {
+        let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
+        sys.refresh_all();
+        
+        // Collect all the process data we need while holding sys lock
+        processes_data = sys
+            .processes()
+            .iter()
+            .map(|(pid, process)| {
+                (
+                    pid.as_u32(),
+                    process.name().to_string(),
+                    process.cmd().to_vec(),
+                    process.user_id().map(|uid| uid.to_string()),
+                    process.cpu_usage(),
+                    process.memory(),
+                    process.status(),
+                    process.parent().map(|p| p.as_u32()),
+                )
+            })
+            .collect::<Vec<_>>();
 
-    let processes = sys.processes()
-        .iter()
-        .map(|(pid, process)| {
-            let pid_u32 = pid.as_u32();
-            
-            // Get or update cache for static process info
-            let static_info = process_cache.entry(pid_u32).or_insert_with(|| {
+        // Get system stats while we still have the sys lock
+        let cpu_usage: Vec<f32> = sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect();
+        let load_avg = sys.load_average();
+        let memory_total = sys.total_memory();
+        let memory_used = sys.used_memory();
+        let memory_free = memory_total - memory_used;
+        let memory_cached = memory_total - (memory_used + memory_free); // Estimated
+
+        system_stats = SystemStats {
+            cpu_usage,
+            memory_total,
+            memory_used,
+            memory_free,
+            memory_cached,
+            uptime: sys.uptime(),
+            load_avg: [load_avg.one, load_avg.five, load_avg.fifteen],
+        };
+    } // sys lock is automatically dropped here
+
+    // Now lock the process cache
+    let mut process_cache = state.process_cache.lock().map_err(|_| "Failed to lock process cache")?;
+
+    // Build the process info list
+    let processes = processes_data
+        .into_iter()
+        .map(|(pid, name, cmd, user_id, cpu_usage, memory, status, ppid)| {
+            let static_info = process_cache.entry(pid).or_insert_with(|| {
                 ProcessStaticInfo {
-                    name: process.name().to_string(),
-                    command: process.cmd().join(" "),
-                    user: process.user_id()
-                        .map_or_else(|| "-".to_string(), |uid| uid.to_string()),
+                    name: name.clone(),
+                    command: cmd.join(" "),
+                    user: user_id.unwrap_or_else(|| "-".to_string()),
                 }
             });
 
-            let status = match process.status() {
+            let status_str = match status {
                 ProcessStatus::Run => "Running",
                 ProcessStatus::Sleep => "Sleeping",
                 ProcessStatus::Idle => "Idle",
@@ -72,31 +111,18 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
             };
 
             ProcessInfo {
-                pid: pid_u32,
-                ppid: process.parent().unwrap_or(sysinfo::Pid::from(0)).as_u32(),
+                pid,
+                ppid: ppid.unwrap_or(0),
                 name: static_info.name.clone(),
-                cpu_usage: process.cpu_usage(),
-                memory_usage: process.memory(),
-                status: status.to_string(),
+                cpu_usage,
+                memory_usage: memory,
+                status: status_str.to_string(),
                 user: static_info.user.clone(),
                 command: static_info.command.clone(),
                 threads: None,
             }
         })
         .collect();
-
-    let memory_cached = sys.available_memory() - sys.free_memory();
-
-    let load_avg = sys.load_average();
-    let system_stats = SystemStats {
-        cpu_usage: sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect(),
-        memory_total: sys.total_memory(),
-        memory_used: sys.used_memory(),
-        memory_free: sys.available_memory(),
-        memory_cached,//FIXME: get accurate value
-        uptime: sys.uptime(),
-        load_avg: [load_avg.one, load_avg.five, load_avg.fifteen],
-    };
 
     Ok((processes, system_stats))
 }

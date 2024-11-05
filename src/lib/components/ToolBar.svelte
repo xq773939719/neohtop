@@ -1,7 +1,6 @@
 <script lang="ts">
   import AppInfo from "./AppInfo.svelte";
   import { statusMap } from "$lib/utils";
-
   export let searchTerm: string;
   export let statusFilter: string = "all";
   export let itemsPerPage: number;
@@ -155,7 +154,9 @@
           disabled={isFrozen}
         >
           {#each refreshRateOptions as option}
-            <option value={option.value}>{option.label} refresh</option>
+            <option value={option.value}>
+              {option.label}
+            </option>
           {/each}
         </select>
         <button
