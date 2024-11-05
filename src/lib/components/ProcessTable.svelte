@@ -376,10 +376,6 @@
     border: 1px solid color-mix(in srgb, var(--red) 30%, transparent);
   }
 
-  .kill-btn::before {
-    background: var(--red);
-  }
-
   .kill-btn:hover {
     color: var(--base);
     background: var(--red);
