@@ -121,14 +121,19 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
 
         *last_update = (current_time, current_rx, current_tx);
 
-        // Calculate total disk usage
-        let disk_stats = sys.disks().iter().fold((0, 0, 0), |acc, disk| {
-            (
-                acc.0 + disk.total_space(),
-                acc.1 + disk.total_space() - disk.available_space(),
-                acc.2 + disk.available_space()
-            )
-        });
+        // Calculate total disk usage - only for physical disks
+        let disk_stats = sys.disks().iter()
+            .filter(|disk| {
+                // Filter for physical disks - typically those mounted at "/"
+                disk.mount_point() == std::path::Path::new("/")
+            })
+            .fold((0, 0, 0), |acc, disk| {
+                (
+                    acc.0 + disk.total_space(),
+                    acc.1 + disk.total_space() - disk.available_space(),
+                    acc.2 + disk.available_space()
+                )
+            });
 
         system_stats = SystemStats {
             cpu_usage: sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect(),
