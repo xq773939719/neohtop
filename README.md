@@ -15,6 +15,8 @@
   <img src="https://github.com/Abdenasser/neohtop/blob/main/screenshot.png?raw=true" alt="NeoHtop Screenshot" width="800" />
 </div>
 
+## [Why another system monitor? that's not a TUI? (the back story)](https://www.abdenasser.com/2024/11/06/oh-boy-neohtop/)
+
 ## Features
 
 - 🚀 Real-time process monitoring
