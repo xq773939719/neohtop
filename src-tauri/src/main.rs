@@ -1,20 +1,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::collections::HashMap;
+use std::sync::Mutex;
+use std::time::Instant;
 use sysinfo::{
-    System,
-    ProcessStatus,
-    NetworksExt,
-    NetworkExt,
-    DiskExt,
-    SystemExt,
-    CpuExt,
-    ProcessExt,
-    PidExt,
+    CpuExt, DiskExt, NetworkExt, NetworksExt, PidExt, ProcessExt, ProcessStatus, System, SystemExt,
 };
 use tauri::State;
-use std::sync::Mutex;
-use std::collections::HashMap;
-use std::time::{Instant};
 
 struct AppState {
     sys: Mutex<System>,
@@ -26,11 +18,19 @@ impl AppState {
     pub fn new() -> Self {
         let mut sys = System::new();
         sys.refresh_all();
-        
+
         // Initialize network stats
-        let initial_rx = sys.networks().iter().map(|(_, data)| data.total_received()).sum();
-        let initial_tx = sys.networks().iter().map(|(_, data)| data.total_transmitted()).sum();
-        
+        let initial_rx = sys
+            .networks()
+            .iter()
+            .map(|(_, data)| data.total_received())
+            .sum();
+        let initial_tx = sys
+            .networks()
+            .iter()
+            .map(|(_, data)| data.total_transmitted())
+            .sum();
+
         Self {
             sys: Mutex::new(sys),
             process_cache: Mutex::new(HashMap::new()),
@@ -76,13 +76,18 @@ pub struct SystemStats {
 }
 
 #[tauri::command]
-async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, SystemStats), String> {
+async fn get_processes(
+    state: State<'_, AppState>,
+) -> Result<(Vec<ProcessInfo>, SystemStats), String> {
     let processes_data;
     let system_stats;
-    
+
     // Scope for system lock
     {
-        let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
+        let mut sys = state
+            .sys
+            .lock()
+            .map_err(|_| "Failed to lock system state")?;
         sys.refresh_all();
         sys.refresh_networks();
         sys.refresh_disks_list();
@@ -107,12 +112,23 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
             .collect::<Vec<_>>();
 
         // Calculate total network I/O
-        let mut last_update = state.last_network_update.lock().map_err(|_| "Failed to lock network state")?;
+        let mut last_update = state
+            .last_network_update
+            .lock()
+            .map_err(|_| "Failed to lock network state")?;
         let elapsed = last_update.0.elapsed().as_secs_f64();
         let current_time = Instant::now();
 
-        let current_rx: u64 = sys.networks().iter().map(|(_, data)| data.total_received()).sum();
-        let current_tx: u64 = sys.networks().iter().map(|(_, data)| data.total_transmitted()).sum();
+        let current_rx: u64 = sys
+            .networks()
+            .iter()
+            .map(|(_, data)| data.total_received())
+            .sum();
+        let current_tx: u64 = sys
+            .networks()
+            .iter()
+            .map(|(_, data)| data.total_transmitted())
+            .sum();
 
         let network_stats = (
             ((current_rx - last_update.1) as f64 / elapsed) as u64,
@@ -122,7 +138,9 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
         *last_update = (current_time, current_rx, current_tx);
 
         // Calculate total disk usage - only for physical disks
-        let disk_stats = sys.disks().iter()
+        let disk_stats = sys
+            .disks()
+            .iter()
             .filter(|disk| {
                 // Filter for physical disks - typically those mounted at "/"
                 disk.mount_point() == std::path::Path::new("/")
@@ -131,7 +149,7 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
                 (
                     acc.0 + disk.total_space(),
                     acc.1 + disk.total_space() - disk.available_space(),
-                    acc.2 + disk.available_space()
+                    acc.2 + disk.available_space(),
                 )
             });
 
@@ -140,9 +158,14 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
             memory_total: sys.total_memory(),
             memory_used: sys.used_memory(),
             memory_free: sys.total_memory() - sys.used_memory(),
-            memory_cached: sys.total_memory() - (sys.used_memory() + (sys.total_memory() - sys.used_memory())),
+            memory_cached: sys.total_memory()
+                - (sys.used_memory() + (sys.total_memory() - sys.used_memory())),
             uptime: sys.uptime(),
-            load_avg: [sys.load_average().one, sys.load_average().five, sys.load_average().fifteen],
+            load_avg: [
+                sys.load_average().one,
+                sys.load_average().five,
+                sys.load_average().fifteen,
+            ],
             network_rx_bytes: network_stats.0,
             network_tx_bytes: network_stats.1,
             disk_total_bytes: disk_stats.0,
@@ -152,39 +175,44 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
     } // sys lock is automatically dropped here
 
     // Now lock the process cache
-    let mut process_cache = state.process_cache.lock().map_err(|_| "Failed to lock process cache")?;
+    let mut process_cache = state
+        .process_cache
+        .lock()
+        .map_err(|_| "Failed to lock process cache")?;
 
     // Build the process info list
     let processes = processes_data
         .into_iter()
-        .map(|(pid, name, cmd, user_id, cpu_usage, memory, status, ppid)| {
-            let static_info = process_cache.entry(pid).or_insert_with(|| {
-                ProcessStaticInfo {
-                    name: name.clone(),
-                    command: cmd.join(" "),
-                    user: user_id.unwrap_or_else(|| "-".to_string()),
+        .map(
+            |(pid, name, cmd, user_id, cpu_usage, memory, status, ppid)| {
+                let static_info = process_cache
+                    .entry(pid)
+                    .or_insert_with(|| ProcessStaticInfo {
+                        name: name.clone(),
+                        command: cmd.join(" "),
+                        user: user_id.unwrap_or_else(|| "-".to_string()),
+                    });
+
+                let status_str = match status {
+                    ProcessStatus::Run => "Running",
+                    ProcessStatus::Sleep => "Sleeping",
+                    ProcessStatus::Idle => "Idle",
+                    _ => "Unknown",
+                };
+
+                ProcessInfo {
+                    pid,
+                    ppid: ppid.unwrap_or(0),
+                    name: static_info.name.clone(),
+                    cpu_usage,
+                    memory_usage: memory,
+                    status: status_str.to_string(),
+                    user: static_info.user.clone(),
+                    command: static_info.command.clone(),
+                    threads: None,
                 }
-            });
-
-            let status_str = match status {
-                ProcessStatus::Run => "Running",
-                ProcessStatus::Sleep => "Sleeping",
-                ProcessStatus::Idle => "Idle",
-                _ => "Unknown"
-            };
-
-            ProcessInfo {
-                pid,
-                ppid: ppid.unwrap_or(0),
-                name: static_info.name.clone(),
-                cpu_usage,
-                memory_usage: memory,
-                status: status_str.to_string(),
-                user: static_info.user.clone(),
-                command: static_info.command.clone(),
-                threads: None,
-            }
-        })
+            },
+        )
         .collect();
 
     Ok((processes, system_stats))
@@ -192,7 +220,10 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
 
 #[tauri::command]
 async fn kill_process(pid: u32, state: State<'_, AppState>) -> Result<bool, String> {
-    let sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
+    let sys = state
+        .sys
+        .lock()
+        .map_err(|_| "Failed to lock system state")?;
     if let Some(process) = sys.process(sysinfo::Pid::from(pid as usize)) {
         Ok(process.kill())
     } else {
@@ -202,11 +233,17 @@ async fn kill_process(pid: u32, state: State<'_, AppState>) -> Result<bool, Stri
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_os::init())
         .manage(AppState::new())
-        .invoke_handler(tauri::generate_handler![
-            get_processes,
-            kill_process
-        ])
+        .invoke_handler(tauri::generate_handler![get_processes, kill_process])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
