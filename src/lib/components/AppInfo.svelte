@@ -22,7 +22,7 @@
   const APP_INFO = {
     name: "NeoHtop",
     developer: "Abdenasser",
-    github: "https://github.com/abdenasser",
+    github: "https://github.com/Abdenasser/neohtop",
     stack: ["Tauri", "Rust", "Svelte", "TypeScript"],
   };
 
@@ -82,9 +82,17 @@
             <span class="value">{APP_INFO.name}</span>
           </div>
           <div class="detail-row">
-            <span class="label">developer</span>
+            <span class="label">source</span>
             <span class="separator">::</span>
-            <span class="value">{APP_INFO.github}</span>
+            <a
+                href={APP_INFO.github}
+                class="value"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+              {APP_INFO.github}
+              </a>
+
           </div>
           <div class="detail-row">
             <span class="label">stack</span>
