@@ -84,7 +84,15 @@
           <div class="detail-row">
             <span class="label">developer</span>
             <span class="separator">::</span>
-            <span class="value">{APP_INFO.github}</span>
+            <a
+                href={APP_INFO.github}
+                class="value"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+              {APP_INFO.github}
+              </a>
+
           </div>
           <div class="detail-row">
             <span class="label">stack</span>
