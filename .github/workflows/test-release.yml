@@ -1,0 +1,38 @@
+name: Test Release Build
+
+on:
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  trigger-builds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Trigger MacOS Build
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: MacOS Nightly Build
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs: '{"event_name": "schedule"}'
+          
+      - name: Trigger Windows Build
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Windows Nightly Build
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs: '{"event_name": "schedule"}'
+          
+      - name: Trigger Linux x86_64 Build
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Linux x86_64 Nightly Build
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs: '{"event_name": "schedule"}'
+          
+      - name: Trigger Linux ARM64 Build
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Linux aarch64 Nightly Build
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs: '{"event_name": "schedule"}' 
