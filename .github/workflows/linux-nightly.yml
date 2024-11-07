@@ -33,11 +33,19 @@ jobs:
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
           sudo dpkg --add-architecture arm64
+          # Remove existing sources to prevent 404 errors
+          sudo rm -f /etc/apt/sources.list.d/*.list
           # Add ARM64 repositories
           sudo tee /etc/apt/sources.list.d/arm64.list << EOF
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
+          EOF
+          # Add amd64 repositories
+          sudo tee /etc/apt/sources.list.d/amd64.list << EOF
+          deb [arch=amd64] http://archive.ubuntu.com/ubuntu jammy main restricted universe multiverse
+          deb [arch=amd64] http://archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse
+          deb [arch=amd64] http://archive.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
           EOF
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
