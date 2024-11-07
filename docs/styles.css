@@ -1147,14 +1147,11 @@ footer {
 }
 
 .download-button.linux {
-  background: var(--primary-color);
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 1rem 1.5rem;
+  background: #E95420;
 }
 
 .download-button.linux:hover {
-  background: var(--secondary-color);
+  background: #C7431B;
 }
 
 .download-options-group {
@@ -1267,8 +1264,8 @@ footer {
 }
 
 .download-button {
-  background: var(--card-background);
-  color: var(--text-primary);
+  background: var(--primary-color);
+  color: white;
   padding: 1rem 1.5rem;
   border-radius: 12px;
   text-decoration: none;
@@ -1276,14 +1273,14 @@ footer {
   align-items: center;
   gap: 1rem;
   transition: all 0.2s;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
   min-width: 250px;
 }
 
 .download-button:hover {
   transform: translateY(-2px);
-  border-color: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--secondary-color);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 
 .download-button .icon {
@@ -1304,7 +1301,7 @@ footer {
 
 .button-text .secondary {
   font-size: 0.85rem;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .linux-options {
