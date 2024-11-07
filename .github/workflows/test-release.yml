@@ -12,27 +12,27 @@ jobs:
       - name: Trigger MacOS Build
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: MacOS Nightly Build
+          workflow: macos-nightly.yml
           token: ${{ secrets.GITHUB_TOKEN }}
           inputs: '{"event_name": "schedule"}'
           
       - name: Trigger Windows Build
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: Windows Nightly Build
+          workflow: windows-nightly.yml
           token: ${{ secrets.GITHUB_TOKEN }}
           inputs: '{"event_name": "schedule"}'
           
       - name: Trigger Linux x86_64 Build
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: Linux x86_64 Nightly Build
+          workflow: linux-x86_64-nightly.yml
           token: ${{ secrets.GITHUB_TOKEN }}
           inputs: '{"event_name": "schedule"}'
           
       - name: Trigger Linux ARM64 Build
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: Linux aarch64 Nightly Build
+          workflow: linux-aarch64-nightly.yml
           token: ${{ secrets.GITHUB_TOKEN }}
           inputs: '{"event_name": "schedule"}' 
