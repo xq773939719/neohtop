@@ -1,4 +1,4 @@
-name: Linux (x86_64) Nightly Build
+name: Linux (x86_64, aarch64) Nightly Build
 
 on:
   workflow_dispatch:  # Allows manual triggering
@@ -10,6 +10,9 @@ jobs:
   build:
     name: Build Linux Packages
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu]
     
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +26,12 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         
+      - name: Install Cross-Compilation Tools
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          
       - name: Install Linux Dependencies
         run: |
           sudo apt-get update
@@ -44,37 +53,37 @@ jobs:
       - name: Build Frontend
         run: npm run build
         
-      - name: Build AppImage (x86_64)
+      - name: Build AppImage (${{ matrix.target }})
         run: |
-          echo "Building AppImage for x86_64..."
-          npm run tauri build -- --target x86_64-unknown-linux-gnu --bundles appimage
+          echo "Building AppImage for ${{ matrix.target }}..."
+          npm run tauri build -- --target ${{ matrix.target }} --bundles appimage
           
-      - name: Build Debian Package (x86_64)
+      - name: Build Debian Package (${{ matrix.target }})
         run: |
-          echo "Building Debian package for x86_64..."
-          npm run tauri build -- --target x86_64-unknown-linux-gnu --bundles deb
+          echo "Building Debian package for ${{ matrix.target }}..."
+          npm run tauri build -- --target ${{ matrix.target }} --bundles deb
           
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: linux-appimage
-          path: src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
+          name: linux-appimage-${{ matrix.target }}
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
           
       - name: Upload Debian Package
         uses: actions/upload-artifact@v4
         with:
-          name: linux-deb
-          path: src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
+          name: linux-deb-${{ matrix.target }}
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
           
       - name: Create Release
-        if: github.event_name == 'schedule'  # Only create release for scheduled builds
+        if: github.event_name == 'schedule'
         uses: softprops/action-gh-release@v1
         with:
           name: Linux Nightly Build ${{ github.sha }}
           tag_name: linux-nightly-${{ github.sha }}
           files: |
-            src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
-            src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
+            src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
+            src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
