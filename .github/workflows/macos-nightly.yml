@@ -48,11 +48,19 @@ jobs:
         run: |
           echo "Building for x86_64..."
           npm run tauri build -- --target x86_64-apple-darwin --bundles dmg
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           
       - name: Build for Apple Silicon
         run: |
           echo "Building for aarch64..."
           npm run tauri build -- --target aarch64-apple-darwin --bundles dmg
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           
       - name: Upload Intel Build
         uses: actions/upload-artifact@v4
