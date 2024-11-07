@@ -56,7 +56,13 @@ jobs:
           
       - name: Install Dependencies
         run: npm install
-          
+
+      - name: Configure pkg-config for Cross-Compilation
+        run: |
+          sudo apt-get install -y pkg-config-aarch64-linux-gnu
+          echo "PKG_CONFIG=/usr/bin/aarch64-linux-gnu-pkg-config" >> $GITHUB_ENV
+          echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV          
+
       - name: Build Frontend
         run: npm run build
         
