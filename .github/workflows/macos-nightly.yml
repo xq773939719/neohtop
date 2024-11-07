@@ -70,11 +70,11 @@ jobs:
         if: github.event_name == 'workflow_dispatch'  # Only create release for scheduled builds
         uses: softprops/action-gh-release@v1
         with:
-          name: Nightly Build ${{ github.sha }}
-          tag_name: nightly-${{ github.sha }}
+          name: MacOS Nightly Build ${{ github.sha }}
+          tag_name: macos-nightly-${{ github.sha }}
           files: |
             src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
             src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
           prerelease: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
