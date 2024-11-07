@@ -1,9 +1,6 @@
 name: Linux (x86_64) Nightly Build
 
 on:
-  push:
-    branches:
-      - pr-29
   workflow_dispatch:  # Allows manual triggering
 
 env:

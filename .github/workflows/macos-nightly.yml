@@ -1,9 +1,6 @@
 name: MacOS (x86_64/arm) Nightly Build
 
 on:
-  push:
-    branches:
-      - pr-29
   workflow_dispatch:  # Allows manual triggering
 
 env:
