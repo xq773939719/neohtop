@@ -46,8 +46,8 @@ jobs:
         
       - name: Build for Intel Mac
         run: |
-          echo "Building for x86_64..."
-          npm run tauri build -- --target x86_64-apple-darwin --bundles dmg
+          echo "Building for Intel Mac..."
+          npm run tauri build -- --target intel-apple-darwin --bundles dmg
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -55,8 +55,8 @@ jobs:
           
       - name: Build for Apple Silicon
         run: |
-          echo "Building for aarch64..."
-          npm run tauri build -- --target aarch64-apple-darwin --bundles dmg
+          echo "Building for Apple Silicon..."
+          npm run tauri build -- --target apple-silicon-darwin --bundles dmg
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -66,13 +66,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-intel-build
-          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
+          path: src-tauri/target/intel-apple-darwin/release/bundle/dmg/*.dmg
           
       - name: Upload Apple Silicon Build
         uses: actions/upload-artifact@v4
         with:
           name: macos-apple-silicon-build
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+          path: src-tauri/target/apple-silicon-darwin/release/bundle/dmg/*.dmg
           
       - name: Get version from package.json
         id: version
@@ -85,8 +85,8 @@ jobs:
           name: "MacOS Nightly Build v${{ steps.version.outputs.version }}"
           tag_name: "macos-nightly-${{ steps.version.outputs.version }}"
           files: |
-            src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
-            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/intel-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/apple-silicon-darwin/release/bundle/dmg/*.dmg
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
