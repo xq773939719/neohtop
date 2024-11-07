@@ -67,11 +67,18 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Configure pkg-config for Cross-Compilation
+      - name: Setup pkg-config for ARM64
         run: |
-          sudo apt-get install -y pkg-config-aarch64-linux-gnu
+          sudo apt-get install -y crossbuild-essential-arm64 pkg-config
+          # Create the pkg-config wrapper for aarch64
+          sudo tee /usr/bin/aarch64-linux-gnu-pkg-config << 'EOF'
+          #!/bin/sh
+          export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
+          exec pkg-config "$@"
+          EOF
+          sudo chmod +x /usr/bin/aarch64-linux-gnu-pkg-config
           echo "PKG_CONFIG=/usr/bin/aarch64-linux-gnu-pkg-config" >> $GITHUB_ENV
-          echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV          
+          echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV    
 
       - name: Build Frontend
         run: npm run build
