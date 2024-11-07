@@ -51,9 +51,9 @@ jobs:
         if: github.event_name == 'workflow_dispatch'  # Only create release for scheduled builds
         uses: softprops/action-gh-release@v1
         with:
-          name: Windows Nightly Build ${{ github.sha }}
-          tag_name: windows-nightly-${{ github.sha }}
+          name: Windows Nightly Build
+          tag_name: windows-nightly-latest
           files: src-tauri/target/release/*.exe
-          prerelease: true
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
