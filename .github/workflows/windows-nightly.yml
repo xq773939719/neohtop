@@ -49,6 +49,7 @@ jobs:
           
       - name: Get version from package.json
         id: version
+        shell: bash  # Force using bash shell
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
           
       - name: Create Release
