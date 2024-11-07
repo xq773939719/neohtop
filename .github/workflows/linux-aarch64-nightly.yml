@@ -30,17 +30,15 @@ jobs:
         with:
           targets: aarch64-unknown-linux-gnu
         
-      - name: Configure ARM64 build environment
+      - name: Configure ARM64 repositories
         run: |
           sudo dpkg --add-architecture arm64
-          # Remove existing sources to prevent 404 errors
-          sudo rm -f /etc/apt/sources.list.d/*.list
-          # Add ARM64 repositories from ports.ubuntu.com
           sudo tee /etc/apt/sources.list.d/arm64.list << EOF
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
           EOF
+          sudo rm -f /etc/apt/sources.list.d/security.list
           sudo apt-get update
           # Install required packages including cross-compilation tools
           sudo apt-get install -y \
