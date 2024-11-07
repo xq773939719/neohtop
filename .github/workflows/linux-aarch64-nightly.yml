@@ -139,7 +139,7 @@ jobs:
           path: src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/deb/*.deb
           
       - name: Create Release
-        if: github.event_name == 'schedule'  # Only create release for scheduled builds
+        if: github.event_name == 'workflow_dispatch'  # Only create release for scheduled builds
         uses: softprops/action-gh-release@v1
         with:
           name: Linux ARM64 Nightly Build ${{ github.sha }}

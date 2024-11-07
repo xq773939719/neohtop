@@ -67,7 +67,7 @@ jobs:
           path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
           
       - name: Create Release
-        if: github.event_name == 'schedule'  # Only create release for scheduled builds
+        if: github.event_name == 'workflow_dispatch'  # Only create release for scheduled builds
         uses: softprops/action-gh-release@v1
         with:
           name: Nightly Build ${{ github.sha }}
