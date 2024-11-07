@@ -33,12 +33,18 @@ jobs:
       - name: Configure ARM64 repositories
         run: |
           sudo dpkg --add-architecture arm64
-          sudo tee /etc/apt/sources.list.d/arm64.list << EOF
+          # Remove all existing sources
+          sudo rm -rf /etc/apt/sources.list.d/*
+          sudo truncate -s 0 /etc/apt/sources.list
+          # Add only ports.ubuntu.com repository
+          sudo tee /etc/apt/sources.list << EOF
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
+          deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu jammy main restricted universe multiverse
+          deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse
+          deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
           EOF
-          sudo rm -f /etc/apt/sources.list.d/security.list
           sudo apt-get update
           # Install required packages including cross-compilation tools
           sudo apt-get install -y \
