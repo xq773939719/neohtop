@@ -1,7 +1,10 @@
 name: MacOS (x86_64/arm) Nightly Build
 
 on:
-  workflow_dispatch:      # Allows manual triggering
+  push:
+    branches:
+      - pr-29
+  workflow_dispatch:  # Allows manual triggering
 
 env:
   CARGO_TERM_COLOR: always
