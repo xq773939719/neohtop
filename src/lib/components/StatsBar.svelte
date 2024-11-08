@@ -452,5 +452,6 @@
   .stat-panel:nth-child(4),
   .stat-panel:nth-child(5) {
     flex: 0.8; /* Storage, System, and Network: less space */
+    min-width: 125px;
   }
 </style>
