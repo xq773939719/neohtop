@@ -41,6 +41,7 @@ jobs:
         run: npm run build
         
       - name: Build Windows Executable
+        shell: bash  # Force using bash shell for consistent environment variable setting
         run: |
           echo "Building Windows executable..."
           npm run tauri build
