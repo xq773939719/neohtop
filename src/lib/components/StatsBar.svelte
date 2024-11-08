@@ -97,10 +97,6 @@
             <span>Free</span>
             <span>{formatMemorySize(systemStats.memory_free)}</span>
           </div>
-          <div class="stat-item">
-            <span>Cached</span>
-            <span>{formatMemorySize(systemStats.memory_cached)}</span>
-          </div>
         </div>
       </div>
 
