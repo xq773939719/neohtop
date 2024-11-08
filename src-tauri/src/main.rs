@@ -5,12 +5,13 @@ use sysinfo::{
     ProcessStatus,
     NetworksExt,
     NetworkExt,
-    DiskExt,
+    Disk,
     SystemExt,
     CpuExt,
     ProcessExt,
     PidExt,
 };
+use std::slice::Iter;
 use tauri::State;
 use std::sync::Mutex;
 use std::collections::HashMap;
@@ -75,6 +76,20 @@ pub struct SystemStats {
     pub disk_free_bytes: u64,
 }
 
+// Assume MacOS or Linux
+#[cfg(not(target_os = "windows"))]
+fn filter_disks(disks: &[Disk]) -> Iter<Disk> {
+    disks.iter().filter(|disk| {
+        // Filter for physical disks - typically those mounted at "/"
+        disk.mount_point() == std::path::Path::new("/")
+    })
+}
+
+#[cfg(target_os = "windows")]
+fn filter_disks(disks: &[Disk]) -> Iter<Disk> {
+    disks.iter()
+}
+
 #[tauri::command]
 async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, SystemStats), String> {
     let processes_data;
@@ -121,12 +136,8 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
 
         *last_update = (current_time, current_rx, current_tx);
 
-        // Calculate total disk usage - only for physical disks
-        let disk_stats = sys.disks().iter()
-            .filter(|disk| {
-                // Filter for physical disks - typically those mounted at "/"
-                disk.mount_point() == std::path::Path::new("/")
-            })
+        // Calculate total disk usage
+        let disk_stats = filter_disks(& sys.disks())
             .fold((0, 0, 0), |acc, disk| {
                 (
                     acc.0 + disk.total_space(),
