@@ -6,6 +6,12 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 1
+  CARGO_NET_RETRY: 10
+  RUSTUP_MAX_RETRIES: 10
+  RUST_BACKTRACE: 1
+  RUSTC_WRAPPER: sccache
+  CARGO_BUILD_JOBS: ${{ runtime.numCPU }}
 
 jobs:
   build:
@@ -21,14 +27,19 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
           
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Cache Linux Dependencies
+        id: cache-apt
+        uses: actions/cache@v3
         with:
-          components: cargo
-      
-      - uses: Swatinem/rust-cache@v2
-          
+          path: |
+            /var/cache/apt
+            /var/lib/apt/lists
+          key: ${{ runner.os }}-apt-${{ hashFiles('**/build-check.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
       - name: Install Linux Dependencies
+        if: steps.cache-apt.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
@@ -41,6 +52,18 @@ jobs:
             libjavascriptcoregtk-4.0-dev \
             libsoup-3.0-dev \
             libwebkit2gtk-4.1-dev
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: cargo
+          target: x86_64-unknown-linux-gnu
+          profile: minimal
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "build"
+          save-if: ${{ github.ref == 'refs/heads/main' }}
           
       - name: Install Dependencies
         run: npm ci
