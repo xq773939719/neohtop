@@ -221,23 +221,6 @@
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--blue) 25%, transparent);
   }
 
-  .btn-clear {
-    padding: 6px 12px;
-    background: var(--surface0);
-    border: 1px solid var(--surface1);
-    border-radius: 6px;
-    color: var(--text);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-  }
-
-  .btn-clear:hover {
-    background: var(--surface1);
-    border-color: var(--surface2);
-  }
-
   .pagination-controls {
     display: flex;
     align-items: center;
