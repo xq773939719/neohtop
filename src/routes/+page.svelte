@@ -30,7 +30,7 @@
 
   let columns: Column[] = [
     { id: "name", label: "Process Name", visible: true, required: true },
-    { id: "pid", label: "PID", visible: true, required: true },
+    { id: "pid", label: "PID", visible: true, required: false },
     {
       id: "status",
       label: "Status",
