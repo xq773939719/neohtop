@@ -62,11 +62,12 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
+          workspaces: "./src-tauri -> target"
           shared-key: "build"
-          save-if: ${{ github.ref == 'refs/heads/main' }}
           
       - name: Install Dependencies
         run: npm ci
         
       - name: Build Application
-        run: npm run tauri build
+        working-directory: ./src-tauri
+        run: cargo build --verbose
