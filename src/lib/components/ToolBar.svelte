@@ -46,20 +46,11 @@
     <div class="search-box">
       <div class="search-input-wrapper">
         <input
-          type="text"
+          type="search"
           placeholder="Search processes"
           bind:value={searchTerm}
           class="search-input"
         />
-        {#if searchTerm}
-          <button
-            class="btn-clear"
-            on:click={() => (searchTerm = "")}
-            title="Clear search"
-          >
-            Clear
-          </button>
-        {/if}
       </div>
     </div>
     <div class="toolbar-group">
@@ -98,10 +89,10 @@
         >
           «
         </button>
-        <span class="page-info">
-          Page {currentPage} of {totalPages}
+        <div class="page-info">
+          <span>Page {currentPage} of {totalPages}</span>
           <span class="results-info">({totalResults} processes)</span>
-        </span>
+        </div>
         <button
           class="btn-page"
           disabled={currentPage === totalPages}
@@ -118,6 +109,7 @@
         </button>
       </div>
     </div>
+    <div class="toolbar-spacer"></div>
 
     <div class="column-toggle">
       <button
@@ -306,8 +298,13 @@
     font-size: 12px;
     color: var(--subtext0);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .page-info span {
+    display: block;
   }
 
   .results-info {
