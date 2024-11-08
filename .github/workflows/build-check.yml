@@ -32,15 +32,18 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            /var/cache/apt
-            /var/lib/apt/lists
+            /var/cache/apt/archives/*.deb
+            /var/lib/apt/lists/*
           key: ${{ runner.os }}-apt-${{ hashFiles('**/build-check.yml') }}
           restore-keys: |
             ${{ runner.os }}-apt-
 
       - name: Install Linux Dependencies
-        if: steps.cache-apt.outputs.cache-hit != 'true'
         run: |
+          sudo rm -rf /var/cache/apt/archives/lock
+          sudo rm -rf /var/cache/apt/archives/partial
+          sudo rm -rf /var/lib/apt/lists/lock
+          sudo rm -rf /var/lib/apt/lists/partial
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
             build-essential \
