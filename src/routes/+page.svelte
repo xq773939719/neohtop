@@ -60,11 +60,22 @@
   };
 
   $: filteredProcesses = processes.filter((process) => {
-    const matchesSearch = searchTerm
-      ? process.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        process.command.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        process.pid.toString().includes(searchTerm)
-      : true;
+    let matchesSearch = searchTerm.length === 0;
+    searchTerm
+      .split(",")
+      .map((term) => term.trim())
+      .forEach((term) => {
+        const nameSubstringMatch = process.name
+          .toLowerCase()
+          .includes(term.toLowerCase());
+        const nameRegexMatch = new RegExp(term, "i").test(process.name);
+        const commandMatch = process.command
+          .toLowerCase()
+          .includes(term.toLowerCase());
+        const pidMatch = process.pid.toString().includes(term);
+        matchesSearch ||=
+          nameSubstringMatch || nameRegexMatch || commandMatch || pidMatch;
+      });
 
     const matchesStatus =
       statusFilter === "all" ? true : process.status === statusFilter;

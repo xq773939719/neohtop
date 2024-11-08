@@ -22,6 +22,12 @@
 - 💻 CPU and Memory usage tracking
 - 🎨 Beautiful, modern UI with dark/light themes
 - 🔍 Process search and filtering
+
+  Search for processes by name, command, or PID. Search for multiple things at once by separating them with commas. For
+  example, `arm, x86` will return processes having `arm` or `x86` as a substring of the name or command. You can use
+  regular expressions too. For example, `d$` will return a list of daemons (which tend to end in the letter `d`), while
+  `(\w+)\.\w+` will return a list of processes with reverse domain name notation, such as `com.docker.vmnetd`.
+
 - 📌 Pin important processes
 - 🛠 Process management (kill processes)
 - 🎯 Sort by any column
