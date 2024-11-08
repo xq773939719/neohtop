@@ -28,6 +28,15 @@ jobs:
       
       - uses: Swatinem/rust-cache@v2
           
+      - name: Cache Linux Dependencies
+        id: cache-apt
+        uses: actions/cache@v3
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/build-check.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
       - name: Install Linux Dependencies
         run: |
           sudo apt-get update
