@@ -46,20 +46,11 @@
     <div class="search-box">
       <div class="search-input-wrapper">
         <input
-          type="text"
+          type="search"
           placeholder="Search processes"
           bind:value={searchTerm}
           class="search-input"
         />
-        {#if searchTerm}
-          <button
-            class="btn-clear"
-            on:click={() => (searchTerm = "")}
-            title="Clear search"
-          >
-            Clear
-          </button>
-        {/if}
       </div>
     </div>
     <div class="toolbar-group">
