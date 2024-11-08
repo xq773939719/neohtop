@@ -64,7 +64,6 @@
           style:background={$themeStore.colors.green}
         ></div>
       </div>
-      {$themeStore.label}
     </div>
     <span class="icon">{showMenu ? "▼" : "▶"}</span>
   </button>
