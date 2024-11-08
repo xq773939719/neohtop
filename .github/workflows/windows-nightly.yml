@@ -44,6 +44,7 @@ jobs:
         run: |
           echo "Building Windows executable..."
           npm run tauri build
+          echo "WIN_EXE_PATH=src-tauri/target/release/NeoHtop.exe" >> $GITHUB_ENV
           
       - name: Get version from package.json
         id: version
@@ -57,6 +58,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
           upload_url: ${{ github.event.inputs.release_upload_url }}
-          asset_path: src-tauri/target/release/NeoHtop.exe
+          asset_path: ${{ env.WIN_EXE_PATH }}
           asset_name: NeoHtop_${{ steps.version.outputs.version }}_x64.exe
           asset_content_type: application/vnd.microsoft.portable-executable
