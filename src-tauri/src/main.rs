@@ -6,6 +6,7 @@ use sysinfo::{
     NetworksExt,
     NetworkExt,
     Disk,
+    DiskExt,
     SystemExt,
     CpuExt,
     ProcessExt,
