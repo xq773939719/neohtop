@@ -66,6 +66,15 @@ jobs:
             echo "DEB_PATH=src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/$f" >> $GITHUB_ENV
           done
 
+      - name: Build RPM Package (x86_64)
+        run: |
+          echo "Building RPM package for x86_64..."
+          npm run tauri build -- --target x86_64-unknown-linux-gnu --bundles rpm
+          cd src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/rpm/
+          for f in *.rpm; do
+            echo "RPM_PATH=src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/rpm/$f" >> $GITHUB_ENV
+          done
+
       - name: Get version from package.json
         id: version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
@@ -91,3 +100,14 @@ jobs:
           asset_path: ${{ env.DEB_PATH }}
           asset_name: NeoHtop_${{ steps.version.outputs.version }}_x86_64.deb
           asset_content_type: application/vnd.debian.binary-package
+
+      - name: Upload RPM Package to Release
+        if: github.event.inputs.release_upload_url != ''
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        with:
+          upload_url: ${{ github.event.inputs.release_upload_url }}
+          asset_path: ${{ env.RPM_PATH }}
+          asset_name: NeoHtop_${{ steps.version.outputs.version }}_x86_64.rpm
+          asset_content_type: application/x-rpm
