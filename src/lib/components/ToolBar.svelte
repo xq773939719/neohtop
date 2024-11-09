@@ -1,6 +1,14 @@
 <script lang="ts">
   import AppInfo from "./AppInfo.svelte";
   import { statusMap } from "$lib/utils";
+  import Fa from "svelte-fa";
+  import {
+    faPlay,
+    faPause,
+    faChevronDown,
+    faChevronRight,
+    faArrowRotateRight,
+  } from "@fortawesome/free-solid-svg-icons";
   export let searchTerm: string;
   export let statusFilter: string = "all";
   export let itemsPerPage: number;
@@ -118,7 +126,13 @@
         aria-label="Toggle columns"
       >
         Columns
-        <span class="icon">{showColumnMenu ? "▼" : "▶"}</span>
+        <span class="icon">
+          {#if showColumnMenu}
+            <Fa icon={faChevronDown} />
+          {:else}
+            <Fa icon={faChevronRight} />
+          {/if}
+        </span>
       </button>
 
       {#if showColumnMenu}
@@ -146,9 +160,7 @@
           disabled={isFrozen}
         >
           {#each refreshRateOptions as option}
-            <option value={option.value}>
-              {option.label}
-            </option>
+            <option value={option.value}>{option.label}</option>
           {/each}
         </select>
         <button
@@ -158,9 +170,9 @@
           title={isFrozen ? "Resume Updates" : "Pause Updates"}
         >
           {#if isFrozen}
-            ▶
+            <Fa icon={faPlay} />
           {:else}
-            ⏸
+            <Fa icon={faPause} />
           {/if}
         </button>
       </div>
@@ -332,6 +344,27 @@
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 100;
+    max-height: 300px;
+    overflow-y: auto;
+    min-width: 200px;
+  }
+
+  .column-menu::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .column-menu::-webkit-scrollbar-track {
+    background: var(--mantle);
+    border-radius: 4px;
+  }
+
+  .column-menu::-webkit-scrollbar-thumb {
+    background: var(--surface2);
+    border-radius: 4px;
+  }
+
+  .column-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--surface1);
   }
 
   .column-option {
@@ -384,6 +417,11 @@
     display: flex;
     gap: 8px;
     align-items: center;
+  }
+
+  .refresh-controls :global(svg) {
+    font-size: 14px;
+    color: var(--subtext0);
   }
 
   .btn-action {

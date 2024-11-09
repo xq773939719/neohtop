@@ -3,6 +3,7 @@
     faThumbtack,
     faInfoCircle,
     faXmark,
+    faGripLinesVertical,
   } from "@fortawesome/free-solid-svg-icons";
   import Fa from "svelte-fa";
   import type { Process, Column } from "$lib/types";
@@ -18,6 +19,88 @@
   export let onTogglePin: (command: string) => void;
   export let onShowDetails: (process: Process) => void;
   export let onKillProcess: (process: Process) => void;
+
+  interface ResizeState {
+    leftColumnId: string | null;
+    rightColumnId: string | null;
+    startX: number;
+    leftStartWidth: number;
+    rightStartWidth: number;
+  }
+
+  let resizing: ResizeState = {
+    leftColumnId: null,
+    rightColumnId: null,
+    startX: 0,
+    leftStartWidth: 0,
+    rightStartWidth: 0,
+  };
+
+  // Store column widths
+  let columnWidths: Record<string, number> = {};
+
+  // Initialize default widths
+  $: {
+    columns.forEach((col) => {
+      if (!columnWidths[col.id]) {
+        columnWidths[col.id] = 100; // Default width
+      }
+    });
+  }
+
+  function handleResizeStart(
+    event: MouseEvent,
+    leftColId: string,
+    rightColId: string,
+  ) {
+    event.stopPropagation();
+
+    resizing = {
+      leftColumnId: leftColId,
+      rightColumnId: rightColId,
+      startX: event.pageX,
+      leftStartWidth: columnWidths[leftColId],
+      rightStartWidth: columnWidths[rightColId],
+    };
+
+    document.addEventListener("mousemove", handleResizeMove);
+    document.addEventListener("mouseup", handleResizeEnd);
+  }
+
+  function handleResizeMove(event: MouseEvent) {
+    if (!resizing.leftColumnId || !resizing.rightColumnId) return;
+
+    const delta = event.pageX - resizing.startX;
+
+    // Ensure minimum width (50px) for both columns
+    const newLeftWidth = Math.max(50, resizing.leftStartWidth + delta);
+    const totalWidth = resizing.leftStartWidth + resizing.rightStartWidth;
+    const newRightWidth = Math.max(50, totalWidth - newLeftWidth);
+
+    // Only update if both columns maintain minimum width
+    if (newLeftWidth >= 50 && newRightWidth >= 50) {
+      columnWidths = {
+        ...columnWidths,
+        [resizing.leftColumnId]: newLeftWidth,
+        [resizing.rightColumnId]: newRightWidth,
+      };
+    }
+  }
+
+  function handleResizeEnd() {
+    resizing = {
+      leftColumnId: null,
+      rightColumnId: null,
+      startX: 0,
+      leftStartWidth: 0,
+      rightStartWidth: 0,
+    };
+    document.removeEventListener("mousemove", handleResizeMove);
+    document.removeEventListener("mouseup", handleResizeEnd);
+
+    // Optional: Save to localStorage
+    localStorage.setItem("columnWidths", JSON.stringify(columnWidths));
+  }
 
   function getSortIndicator(field: keyof Process) {
     if (sortConfig.field !== field) return "↕";
@@ -90,20 +173,38 @@
   <table>
     <thead>
       <tr>
-        {#each columns.filter((col) => col.visible) as column}
-          <th class="sortable" on:click={() => onToggleSort(column.id)}>
-            <div class="th-content">
-              {column.label}
-              <span
-                class="sort-indicator"
-                class:active={sortConfig.field === column.id}
-              >
-                {getSortIndicator(column.id)}
-              </span>
+        {#each columns.filter((col) => col.visible) as column, i}
+          <th
+            data-column={column.id}
+            style="width: {columnWidths[column.id]}px"
+          >
+            <div class="th-content" on:click={() => onToggleSort(column.id)}>
+              <div class="th-label">
+                {column.label}
+                <span
+                  class="sort-indicator"
+                  class:active={sortConfig.field === column.id}
+                >
+                  {getSortIndicator(column.id)}
+                </span>
+              </div>
+              {#if i < columns.filter((col) => col.visible).length - 1}
+                <div
+                  class="resize-handle"
+                  on:mousedown|stopPropagation={(e) =>
+                    handleResizeStart(
+                      e,
+                      column.id,
+                      columns.filter((col) => col.visible)[i + 1].id,
+                    )}
+                >
+                  <Fa icon={faGripLinesVertical} size="xs" />
+                </div>
+              {/if}
             </div>
           </th>
         {/each}
-        <th>Actions</th>
+        <th class="col-actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -254,23 +355,59 @@
   .th-content {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .th-label {
+    display: flex;
+    align-items: center;
     gap: 8px;
+    flex: 1;
   }
 
-  .sort-indicator {
+  .resize-handle {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: col-resize;
     color: var(--overlay0);
-    font-size: 12px;
-    opacity: 0.5;
+    opacity: 0;
     transition: all 0.2s ease;
+    margin-left: 8px;
   }
 
-  .sort-indicator.active {
+  /* Show handle on header hover */
+  th:hover .resize-handle {
+    opacity: 1;
+  }
+
+  .resize-handle:hover {
+    color: var(--blue);
+  }
+
+  /* Active state during resize */
+  .resize-handle:active {
     color: var(--blue);
     opacity: 1;
   }
 
-  .sortable:hover .sort-indicator {
+  .sort-indicator {
+    display: inline-flex;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .sort-indicator.active {
     opacity: 1;
+  }
+
+  th:hover .sort-indicator {
+    opacity: 0.5;
   }
 
   .high-usage {
@@ -306,7 +443,6 @@
     position: sticky;
     right: 0;
     z-index: 2;
-    background: var(--base);
     border-left: 1px solid var(--surface0);
     width: 120px;
   }
@@ -426,5 +562,67 @@
     display: flex;
     align-items: center;
     gap: 8px;
+  }
+
+  th {
+    position: relative;
+    min-width: 50px;
+    box-sizing: border-box;
+  }
+
+  .resize-handle {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: col-resize;
+    color: var(--overlay0);
+    opacity: 0;
+    transition: all 0.2s ease;
+  }
+
+  /* Show handle on header hover */
+  th:hover .resize-handle {
+    opacity: 1;
+  }
+
+  .resize-handle:hover {
+    color: var(--blue);
+  }
+
+  /* Active state during resize */
+  .resize-handle:active {
+    color: var(--blue);
+    opacity: 1;
+  }
+
+  /* Optional: Add a subtle background on hover */
+  .resize-handle:hover::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    background: var(--surface0);
+    border-radius: 4px;
+    z-index: -1;
+  }
+
+  /* Make sure the table doesn't shrink columns */
+  table {
+    table-layout: fixed;
+  }
+
+  td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  th {
+    transition: width 0.05s ease;
   }
 </style>
