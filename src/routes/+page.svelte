@@ -53,7 +53,7 @@
     },
     { id: "command", label: "Command", visible: false },
     { id: "ppid", label: "Parent PID", visible: false },
-    { id: "environ", label: "Environment", visible: false },
+    { id: "environ", label: "Environment Variables", visible: false },
     { id: "root", label: "Root", visible: false },
     {
       id: "virtual_memory",
@@ -81,7 +81,7 @@
     },
     {
       id: "disk_usage",
-      label: "Disk Usage",
+      label: "Disk Usage read/write",
       visible: false,
       format: (v) =>
         `${(v[0] / (1024 * 1024)).toFixed(1)} / ${(v[1] / (1024 * 1024)).toFixed(1)} MB`,
