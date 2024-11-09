@@ -8,6 +8,8 @@
     faChevronDown,
     faChevronRight,
   } from "@fortawesome/free-solid-svg-icons";
+  import { configStore } from "$lib/stores/config";
+  import type { AppConfig } from "$lib/types/config";
   export let searchTerm: string;
   export let statusFilter: string = "all";
   export let itemsPerPage: number;
@@ -46,6 +48,26 @@
       currentPage = page;
     }
   }
+
+  function handleColumnVisibilityChange(columnId: string, visible: boolean) {
+    configStore.updateConfig({
+      appearance: {
+        columnVisibility: {
+          ...$configStore.appearance.columnVisibility,
+          [columnId]: visible,
+        },
+      },
+    });
+  }
+
+  function updateBehaviorConfig(key: keyof AppConfig["behavior"], value: any) {
+    configStore.updateConfig({
+      behavior: {
+        ...$configStore.behavior,
+        [key]: value,
+      },
+    });
+  }
 </script>
 
 <div class="toolbar">
@@ -66,7 +88,12 @@
       </div>
     </div>
     <div class="toolbar-group">
-      <select bind:value={statusFilter} class="select-input">
+      <select
+        bind:value={statusFilter}
+        on:change={() =>
+          updateBehaviorConfig("defaultStatusFilter", statusFilter)}
+        class="select-input"
+      >
         {#each statusOptions as option}
           <option value={option.value}>{option.label}</option>
         {/each}
@@ -79,6 +106,7 @@
       <select
         class="select-input"
         bind:value={itemsPerPage}
+        on:change={() => updateBehaviorConfig("itemsPerPage", itemsPerPage)}
         aria-label="Items per page"
       >
         {#each itemsPerPageOptions as option}
@@ -146,8 +174,13 @@
             <label class="column-option">
               <input
                 type="checkbox"
-                bind:checked={column.visible}
+                checked={column.visible}
                 disabled={column.required}
+                on:change={(e) =>
+                  handleColumnVisibilityChange(
+                    column.id,
+                    e.currentTarget.checked,
+                  )}
               />
               <span>{column.label}</span>
             </label>
@@ -161,6 +194,7 @@
         <select
           class="select-input"
           bind:value={refreshRate}
+          on:change={() => updateBehaviorConfig("refreshRate", refreshRate)}
           disabled={isFrozen}
         >
           {#each refreshRateOptions as option}

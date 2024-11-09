@@ -10,6 +10,7 @@
   import { themeStore } from "$lib/stores";
   import type { Process, SystemStats, Column } from "$lib/types";
   import TitleBar from "$lib/components/TitleBar.svelte";
+  import { configStore } from "$lib/stores/config";
 
   let processes: Process[] = [];
   let systemStats: SystemStats | null = null;
@@ -18,19 +19,16 @@
   let searchTerm = "";
   let isLoading = true;
   let currentPage = 1;
-  let itemsPerPage = 15;
   let pinnedProcesses: Set<string> = new Set();
   let selectedProcess: Process | null = null;
   let showInfoModal = false;
   let showConfirmModal = false;
   let processToKill: Process | null = null;
   let isKilling = false;
-  let statusFilter = "all";
-  let refreshRate = 1000;
   let isFrozen = false;
   let selectedProcessPid: number | null = null;
 
-  let columns: Column[] = [
+  let columnDefinitions: Column[] = [
     { id: "name", label: "Process Name", visible: true, required: true },
     { id: "pid", label: "PID", visible: true, required: false },
     {
@@ -89,6 +87,17 @@
       },
     },
   ];
+
+  // Merge column definitions with stored visibility
+  $: columns = columnDefinitions.map((col) => ({
+    ...col,
+    visible:
+      col.required ||
+      ($configStore.appearance.columnVisibility[col.id] ?? col.visible),
+  }));
+  $: itemsPerPage = $configStore.behavior.itemsPerPage;
+  $: refreshRate = $configStore.behavior.refreshRate;
+  $: statusFilter = $configStore.behavior.defaultStatusFilter;
 
   let sortConfig = {
     field: "cpu_usage" as keyof Process,
@@ -262,6 +271,7 @@
       isLoading = false;
     }
 
+    configStore.init();
     themeStore.init();
   });
 
