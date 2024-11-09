@@ -68,7 +68,13 @@
         const nameSubstringMatch = process.name
           .toLowerCase()
           .includes(term.toLowerCase());
-        const nameRegexMatch = new RegExp(term, "i").test(process.name);
+        const nameRegexMatch = (() => {
+          try {
+            return new RegExp(term, "i").test(process.name);
+          } catch {
+            return false;
+          }
+        })();
         const commandMatch = process.command
           .toLowerCase()
           .includes(term.toLowerCase());

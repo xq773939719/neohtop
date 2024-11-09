@@ -135,6 +135,15 @@ jobs:
           for f in *.deb; do
             echo "AARCH64_DEB_PATH=src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/deb/$f" >> $GITHUB_ENV
           done
+
+      - name: Build RPM Package
+        run: |
+          echo "Building RPM package for aarch64..."
+          npm run tauri build -- --target aarch64-unknown-linux-gnu --bundles rpm
+          cd src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/rpm/
+          for f in *.rpm; do
+            echo "AARCH64_RPM_PATH=src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/rpm/$f" >> $GITHUB_ENV
+          done
           
       - name: Get version from package.json
         id: version
@@ -161,3 +170,14 @@ jobs:
           asset_path: ${{ env.AARCH64_DEB_PATH }}
           asset_name: NeoHtop_${{ steps.version.outputs.version }}_aarch64.deb
           asset_content_type: application/vnd.debian.binary-package
+
+      - name: Upload RPM Package to Release
+        if: github.event.inputs.release_upload_url != ''
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        with:
+          upload_url: ${{ github.event.inputs.release_upload_url }}
+          asset_path: ${{ env.AARCH64_RPM_PATH }}
+          asset_name: NeoHtop_${{ steps.version.outputs.version }}_aarch64.rpm
+          asset_content_type: application/x-rpm
