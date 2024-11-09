@@ -6,7 +6,7 @@
   import ProcessTable from "$lib/components/ProcessTable.svelte";
   import ProcessDetailsModal from "$lib/components/ProcessDetailsModal.svelte";
   import KillProcessModal from "$lib/components/KillProcessModal.svelte";
-  import { formatStatus } from "$lib/utils";
+  import { formatMemorySize, formatStatus } from "$lib/utils";
   import { themeStore } from "$lib/stores";
   import type { Process, SystemStats, Column } from "$lib/types";
 
@@ -27,6 +27,7 @@
   let statusFilter = "all";
   let refreshRate = 1000;
   let isFrozen = false;
+  let selectedProcessPid: number | null = null;
 
   let columns: Column[] = [
     { id: "name", label: "Process Name", visible: true, required: true },
@@ -52,6 +53,40 @@
     },
     { id: "command", label: "Command", visible: false },
     { id: "ppid", label: "Parent PID", visible: false },
+    { id: "environ", label: "Environment", visible: false },
+    { id: "root", label: "Root", visible: false },
+    {
+      id: "virtual_memory",
+      label: "Virtual Memory",
+      visible: false,
+      format: (v) => formatMemorySize(v),
+    },
+    {
+      id: "start_time",
+      label: "Start Time",
+      visible: false,
+      format: (v) => new Date(v * 1000).toLocaleString(), // v is the time where the process was started (in seconds) from epoch
+    },
+    {
+      id: "run_time",
+      label: "Run Time",
+      visible: false,
+      format: (v) => {
+        const seconds = v; // v is the time the process has been running in seconds
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const remainingSeconds = seconds % 60;
+        return `${hours}h ${minutes}m ${remainingSeconds}s`; // Format as HH:MM:SS
+      },
+    },
+    {
+      id: "disk_usage",
+      label: "Disk Usage",
+      visible: false,
+      format: (v) =>
+        `${(v[0] / (1024 * 1024)).toFixed(1)} / ${(v[1] / (1024 * 1024)).toFixed(1)} MB`,
+    },
+    { id: "session_id", label: "Session ID", visible: false },
   ];
 
   let sortConfig = {
@@ -127,6 +162,11 @@
     }
   }
 
+  $: if (selectedProcessPid && processes.length > 0) {
+    selectedProcess =
+      processes.find((p) => p.pid === selectedProcessPid) || null;
+  }
+
   async function getProcesses() {
     try {
       const result = await invoke<[Process[], SystemStats]>("get_processes");
@@ -176,6 +216,7 @@
   }
 
   function showProcessDetails(process: Process) {
+    selectedProcessPid = process.pid;
     selectedProcess = process;
     showInfoModal = true;
   }
@@ -196,6 +237,12 @@
         processToKill = null;
       }
     }
+  }
+
+  function handleModalClose() {
+    showInfoModal = false;
+    selectedProcess = null;
+    selectedProcessPid = null;
   }
 
   onMount(async () => {
@@ -259,10 +306,7 @@
 <ProcessDetailsModal
   show={showInfoModal}
   process={selectedProcess}
-  onClose={() => {
-    showInfoModal = false;
-    selectedProcess = null;
-  }}
+  onClose={handleModalClose}
 />
 
 <KillProcessModal
