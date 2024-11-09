@@ -18,7 +18,7 @@
   let isLoading = true;
   let currentPage = 1;
   let itemsPerPage = 15;
-  let pinnedProcesses: Set<number> = new Set();
+  let pinnedProcesses: Set<string> = new Set();
   let selectedProcess: Process | null = null;
   let showInfoModal = false;
   let showConfirmModal = false;
@@ -125,8 +125,8 @@
   });
 
   $: sortedProcesses = filteredProcesses.sort((a, b) => {
-    const aPin = pinnedProcesses.has(a.pid);
-    const bPin = pinnedProcesses.has(b.pid);
+    const aPin = pinnedProcesses.has(a.command);
+    const bPin = pinnedProcesses.has(b.command);
     if (aPin && !bPin) return -1;
     if (!aPin && bPin) return 1;
 
@@ -206,11 +206,11 @@
     }
   }
 
-  function togglePin(pid: number) {
-    if (pinnedProcesses.has(pid)) {
-      pinnedProcesses.delete(pid);
+  function togglePin(command: string) {
+    if (pinnedProcesses.has(command)) {
+      pinnedProcesses.delete(command);
     } else {
-      pinnedProcesses.add(pid);
+      pinnedProcesses.add(command);
     }
     pinnedProcesses = pinnedProcesses; // Trigger reactivity
   }
