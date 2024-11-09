@@ -15,7 +15,7 @@ use sysinfo::{
 use tauri::State;
 use std::sync::Mutex;
 use std::collections::HashMap;
-use std::time::Instant;
+use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 struct AppState {
     sys: Mutex<System>,
@@ -58,6 +58,13 @@ struct ProcessInfo {
     user: String,
     command: String,
     threads: Option<u32>,
+    environ: Vec<String>,
+    root: String,
+    virtual_memory: u64,
+    start_time: u64,
+    run_time: u64,
+    disk_usage: (u64, u64),  // (read_bytes, written_bytes)
+    session_id: Option<u32>,
 }
 
 #[derive(serde::Serialize)]
@@ -96,6 +103,12 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
     let processes_data;
     let system_stats;
     
+    // Get current time once for all calculations
+    let current_time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|e| e.to_string())?
+        .as_secs();
+    
     // Scope for system lock
     {
         let mut sys = state.sys.lock().map_err(|_| "Failed to lock system state")?;
@@ -109,6 +122,13 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
             .processes()
             .iter()
             .map(|(pid, process)| {
+                let start_time = process.start_time();
+                let run_time = if start_time > 0 {
+                    current_time.saturating_sub(start_time)
+                } else {
+                    0
+                };
+
                 (
                     pid.as_u32(),
                     process.name().to_string(),
@@ -118,6 +138,14 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
                     process.memory(),
                     process.status(),
                     process.parent().map(|p| p.as_u32()),
+                    process.environ().to_vec(),
+                    process.root().to_string_lossy().into_owned(),
+                    process.virtual_memory(),
+                    start_time,
+                    run_time,  // Use calculated run_time
+                    process.disk_usage().read_bytes,
+                    process.disk_usage().written_bytes,
+                    process.session_id().map(|id| id.as_u32()),
                 )
             })
             .collect::<Vec<_>>();
@@ -170,7 +198,9 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
     // Build the process info list
     let processes = processes_data
         .into_iter()
-        .map(|(pid, name, cmd, user_id, cpu_usage, memory, status, ppid)| {
+        .map(|(pid, name, cmd, user_id, cpu_usage, memory, status, ppid, 
+               environ, root, virtual_memory, start_time, run_time, 
+               disk_read, disk_written, session_id)| {
             let static_info = process_cache.entry(pid).or_insert_with(|| {
                 ProcessStaticInfo {
                     name: name.clone(),
@@ -196,6 +226,13 @@ async fn get_processes(state: State<'_, AppState>) -> Result<(Vec<ProcessInfo>, 
                 user: static_info.user.clone(),
                 command: static_info.command.clone(),
                 threads: None,
+                environ,
+                root,
+                virtual_memory,
+                start_time,
+                run_time,
+                disk_usage: (disk_read, disk_written),
+                session_id,
             }
         })
         .collect();
