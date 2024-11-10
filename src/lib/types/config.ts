@@ -26,12 +26,12 @@ export const DEFAULT_CONFIG: AppConfig = {
       environ: false,
       session_id: false,
       start_time: false,
-      run_time: true
-    }
+      run_time: true,
+    },
   },
   behavior: {
     itemsPerPage: 15,
     refreshRate: 1000,
-    defaultStatusFilter: 'all'
-  }
-}; 
+    defaultStatusFilter: "all",
+  },
+};
