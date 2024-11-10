@@ -13,7 +13,7 @@
   const themeGroups = [
     {
       label: "Dark",
-      themes: ["catppuccin", "dracula", "monokaiPro", "tokyoNight", "glassy"],
+      themes: ["catppuccin", "dracula", "monokaiPro", "tokyoNight"],
     },
     {
       label: "Light",
@@ -44,6 +44,10 @@
     {
       label: "Accessibility",
       themes: ["highContrast"],
+    },
+    {
+      label: "Glassy",
+      themes: ["glassy"],
     },
   ];
 </script>

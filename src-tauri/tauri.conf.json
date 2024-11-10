@@ -32,9 +32,11 @@
   "identifier": "com.neohtop.dev",
   "plugins": {},
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
         "fullscreen": false,
+        "theme":"Dark",
         "height": 900,
         "resizable": true,
         "title": "NeoHtop",

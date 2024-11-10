@@ -9,9 +9,7 @@ use sysinfo::{
 };
 use tauri::{Manager, State};
 
-use window_vibrancy::apply_vibrancy;
-#[cfg(target_os = "windows")]
-use window_vibrancy::{apply_acrylic, apply_blur, NSVisualEffectMaterial, NSVisualEffectState};
+use window_vibrancy::{apply_acrylic, apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
 
 struct AppState {
     sys: Mutex<System>,
@@ -299,21 +297,28 @@ async fn kill_process(pid: u32, state: State<'_, AppState>) -> Result<bool, Stri
     }
 }
 
+#[cfg(target_os = "windows")]
+fn setup_window_effects(window: &tauri::WebviewWindow) -> Result<(), Box<dyn std::error::Error>> {
+    apply_acrylic(window, Some((0, 0, 25, 125)))?;
+    Ok(())
+}
+
+#[cfg(not(target_os = "windows"))]
+fn setup_window_effects(window: &tauri::WebviewWindow) -> Result<(), Box<dyn std::error::Error>> {
+    apply_vibrancy(
+        window,
+        NSVisualEffectMaterial::HudWindow,
+        Some(NSVisualEffectState::Active),
+        None,
+    )?;
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
-
-            #[cfg(target_os = "windows")]
-            {
-                // You can choose either blur or acrylic effect
-                apply_acrylic(&window, Some((0, 0, 25, 125))).expect("Failed to apply blur effect");
-
-                // Or use acrylic effect (Windows 10/11)
-                // apply_acrylic(&window, Some((18, 18, 18, 125)))
-                //     .expect("Failed to apply acrylic effect");
-            }
-
+            setup_window_effects(&window).expect("Failed to apply window effects");
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
