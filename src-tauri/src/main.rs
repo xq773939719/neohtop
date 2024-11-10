@@ -8,8 +8,10 @@ use sysinfo::{
     SystemExt,
 };
 use tauri::{Manager, State};
-
-use window_vibrancy::{apply_acrylic, apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
+#[cfg(target_os = "windows")]
+use window_vibrancy::apply_acrylic;
+#[cfg(target_os = "macos")]
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
 
 struct AppState {
     sys: Mutex<System>,
@@ -328,6 +330,7 @@ fn main() {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_os::init())
         .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![get_processes, kill_process])
         .run(tauri::generate_context!())
