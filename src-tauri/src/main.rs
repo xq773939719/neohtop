@@ -4,8 +4,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 use sysinfo::{
-    CpuExt, Disk, DiskExt, NetworkExt, NetworksExt, PidExt, ProcessExt, 
-    ProcessStatus, System,
+    CpuExt, Disk, DiskExt, NetworkExt, NetworksExt, PidExt, ProcessExt, ProcessStatus, System,
     SystemExt,
 };
 use tauri::State;
