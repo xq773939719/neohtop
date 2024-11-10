@@ -303,7 +303,7 @@ fn setup_window_effects(window: &tauri::WebviewWindow) -> Result<(), Box<dyn std
     Ok(())
 }
 
-#[cfg(not(target_os = "windows"))]
+#[cfg(target_os = "macos")]
 fn setup_window_effects(window: &tauri::WebviewWindow) -> Result<(), Box<dyn std::error::Error>> {
     apply_vibrancy(
         window,
