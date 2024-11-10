@@ -314,6 +314,12 @@ fn setup_window_effects(window: &tauri::WebviewWindow) -> Result<(), Box<dyn std
     Ok(())
 }
 
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
+fn setup_window_effects(_window: &tauri::WebviewWindow) -> Result<(), Box<dyn std::error::Error>> {
+    // No-op for other platforms
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
