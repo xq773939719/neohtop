@@ -23,6 +23,8 @@ function createThemeStore() {
       if (theme) {
         if (typeof window !== "undefined") {
           localStorage.setItem("theme", themeName);
+          // Add this line to set the data-theme attribute
+          document.documentElement.setAttribute("data-theme", themeName);
         }
         set(theme);
         applyTheme(theme);
@@ -32,6 +34,13 @@ function createThemeStore() {
       const storedTheme =
         typeof window !== "undefined" ? localStorage.getItem("theme") : null;
       const theme = (storedTheme && themes[storedTheme]) || defaultTheme;
+      if (typeof window !== "undefined") {
+        // Add this line to set the data-theme attribute on init
+        document.documentElement.setAttribute(
+          "data-theme",
+          storedTheme || "catppuccin",
+        );
+      }
       applyTheme(theme);
     },
   };

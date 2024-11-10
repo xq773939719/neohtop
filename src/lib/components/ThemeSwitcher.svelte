@@ -7,6 +7,7 @@
     faChevronDown,
     faChevronRight,
   } from "@fortawesome/free-solid-svg-icons";
+  import { platform } from "@tauri-apps/plugin-os";
 
   let showMenu = false;
 
@@ -45,6 +46,14 @@
       label: "Accessibility",
       themes: ["highContrast"],
     },
+    ...(platform() === "windows" || platform() === "macos"
+      ? [
+          {
+            label: "Glassy",
+            themes: ["glassy"],
+          },
+        ]
+      : []),
   ];
 </script>
 

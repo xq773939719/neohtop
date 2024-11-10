@@ -64,3 +64,58 @@ body {
 ::-webkit-scrollbar-corner {
   background: var(--mantle);
 }
+
+/* Glassy theme */
+
+[data-theme="glassy"] body {
+  background: transparent !important;
+}
+
+[data-theme="glassy"] .toolbar {
+  position: relative;
+  background: rgba(24, 24, 37, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  z-index: 9;
+}
+
+[data-theme="glassy"] .stat-panel {
+  background: rgba(24, 24, 37, 0.2) !important;
+  z-index: 100;
+}
+
+[data-theme="glassy"] .panel-header {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="glassy"] .col-actions {
+  background: rgba(24, 24, 37, 0.2) !important;
+  border-bottom: 1px solid rgba(232, 232, 232, 0.1) !important;
+  border-left: 1px solid rgba(232, 232, 232, 0.1) !important;
+}
+
+[data-theme="glassy"] .search-input,
+[data-theme="glassy"] .btn-toggle,
+[data-theme="glassy"] .btn-action,
+[data-theme="glassy"] .info-button,
+[data-theme="glassy"] .btn-page,
+[data-theme="glassy"] .theme-button,
+[data-theme="glassy"] .usage-pill,
+[data-theme="glassy"] .bar-container,
+[data-theme="glassy"] .select-input {
+  background: rgba(24, 24, 37, 0.2) !important;
+  z-index: 100;
+}
+
+[data-theme="glassy"] tr.pinned,
+[data-theme="glassy"] tr:hover {
+  background: rgba(24, 24, 37, 0.3) !important;
+}
+
+[data-theme="glassy"] th {
+  background: rgba(24, 24, 37, 0.5) !important;
+}
+
+[data-theme="glassy"] td {
+  border-bottom: 1px solid rgba(232, 232, 232, 0.1) !important;
+  background: rgba(24, 24, 37, 0.2) !important;
+}

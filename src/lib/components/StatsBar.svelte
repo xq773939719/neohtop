@@ -180,9 +180,7 @@
 
 <style>
   .dashboard-stats {
-    background: var(--base);
     padding: 0.5rem;
-    border-radius: 8px;
     overflow-x: auto;
   }
 
@@ -195,10 +193,10 @@
   .stat-panel {
     flex: 1;
     min-width: 0;
-    background: var(--mantle);
+    background-color: var(--mantle);
     border-radius: 6px;
     padding: 0.75rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); */
     display: flex;
     flex-direction: column;
   }

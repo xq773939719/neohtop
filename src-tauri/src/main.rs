@@ -7,7 +7,11 @@ use sysinfo::{
     CpuExt, Disk, DiskExt, NetworkExt, NetworksExt, PidExt, ProcessExt, ProcessStatus, System,
     SystemExt,
 };
-use tauri::State;
+use tauri::{Manager, State};
+#[cfg(target_os = "windows")]
+use window_vibrancy::apply_acrylic;
+#[cfg(target_os = "macos")]
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
 
 struct AppState {
     sys: Mutex<System>,
@@ -295,9 +299,38 @@ async fn kill_process(pid: u32, state: State<'_, AppState>) -> Result<bool, Stri
     }
 }
 
+#[cfg(target_os = "windows")]
+fn setup_window_effects(window: &tauri::WebviewWindow) -> Result<(), Box<dyn std::error::Error>> {
+    apply_acrylic(window, Some((0, 0, 25, 125)))?;
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+fn setup_window_effects(window: &tauri::WebviewWindow) -> Result<(), Box<dyn std::error::Error>> {
+    apply_vibrancy(
+        window,
+        NSVisualEffectMaterial::HudWindow,
+        Some(NSVisualEffectState::Active),
+        None,
+    )?;
+    Ok(())
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
+fn setup_window_effects(_window: &tauri::WebviewWindow) -> Result<(), Box<dyn std::error::Error>> {
+    // No-op for other platforms
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            let window = app.get_webview_window("main").unwrap();
+            setup_window_effects(&window).expect("Failed to apply window effects");
+            Ok(())
+        })
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_os::init())
         .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![get_processes, kill_process])
         .run(tauri::generate_context!())
