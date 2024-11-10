@@ -298,6 +298,7 @@ async fn kill_process(pid: u32, state: State<'_, AppState>) -> Result<bool, Stri
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
         .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![get_processes, kill_process])
         .run(tauri::generate_context!())
