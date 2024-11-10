@@ -64,3 +64,43 @@ body {
 ::-webkit-scrollbar-corner {
   background: var(--mantle);
 }
+
+[data-theme="glassy"] body {
+  background: transparent !important;
+}
+
+[data-theme="glassy"] .title-bar {
+  position: relative;
+  background: rgba(24, 24, 37, 0.5) !important;
+  z-index: 10;
+}
+
+[data-theme="glassy"] .toolbar {
+  position: relative;
+  background: rgba(24, 24, 37, 0.5) !important;
+  z-index: 9;
+}
+
+[data-theme="glassy"] .process-table {
+  position: relative;
+  background: rgba(24, 24, 37, 0.5) !important;
+  z-index: 8;
+}
+
+[data-theme="glassy"] .stat-panel {
+  background: rgba(24, 24, 37, 0.5) !important;
+  z-index: 100;
+}
+
+[data-theme="glassy"] th {
+  background: rgba(24, 24, 37, 0.5) !important;
+}
+
+[data-theme="glassy"] .col-actions {
+  background: rgba(24, 24, 37, 0.2) !important;
+}
+
+[data-theme="glassy"] .process-table tr:hover td {
+  background: rgba(24, 24, 37, 0.55) !important;
+}
+
