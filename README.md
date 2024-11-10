@@ -59,6 +59,9 @@ npm run tauri dev
 
 # Build for production
 npm run tauri build
+
+# Build for local mac(Bypass code signing)
+npm run tauri build -- --bundles app --config "{\"bundle\":{\"macOS\":{\"signingIdentity\":null}}}"
 ```
 
 ## Contributing
