@@ -120,9 +120,8 @@ async fn get_processes(
             .lock()
             .map_err(|_| "Failed to lock system state")?;
         sys.refresh_all();
-        sys.refresh_networks();
+        sys.refresh_networks_list();
         sys.refresh_disks_list();
-        sys.refresh_disks();
 
         // Collect all the process data we need while holding sys lock
         processes_data = sys
