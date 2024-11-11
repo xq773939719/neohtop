@@ -14,7 +14,7 @@
   const themeGroups = [
     {
       label: "Dark",
-      themes: ["catppuccin", "dracula", "monokaiPro", "tokyoNight"],
+      themes: ["catppuccin", "dracula", "monokaiPro", "tokyoNight", "ayuDark"],
     },
     {
       label: "Light",
