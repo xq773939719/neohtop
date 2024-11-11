@@ -17,6 +17,7 @@
 
 <div class="title-bar" data-tauri-drag-region>
   <div class="title">
+    <img src="/32x32.png" alt="NeoHtop" class="app-icon" />
     <div class="neon">NeoHtop</div>
     <div class="scanlines"></div>
   </div>
@@ -45,7 +46,7 @@
 
   .neon {
     font-family: "Courier New", monospace;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     color: var(--text);
     text-shadow:
@@ -108,5 +109,13 @@
     to {
       transform: translateY(2px);
     }
+  }
+
+  .app-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
   }
 </style>

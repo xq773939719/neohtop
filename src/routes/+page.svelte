@@ -284,12 +284,7 @@
 {#if isLoading}
   <div class="loading-container">
     <div class="loading-content">
-      <div class="title-wrapper">
-        <div class="neon-title">NeoHtop</div>
-        <div class="neon-flare"></div>
-      </div>
-      <div class="cyber-spinner"></div>
-      <span class="loading-text">System Initialization...</span>
+      <img src="128x128.png" alt="NeoHtop Logo" class="logo" />
     </div>
   </div>
 {:else}
@@ -416,206 +411,29 @@
 
   .loading-content {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 16px;
+    justify-content: center;
     z-index: 2;
   }
 
-  @keyframes glitch {
+  .logo {
+    width: 128px;
+    height: 128px;
+    filter: drop-shadow(0 0 5px var(--text)) drop-shadow(0 0 10px var(--text))
+      drop-shadow(0 0 20px var(--blue)) drop-shadow(0 0 40px var(--blue));
+    animation: neonPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes neonPulse {
     0%,
     100% {
-      transform: translate(0);
-    }
-    20% {
-      transform: translate(-2px, 2px);
-    }
-    40% {
-      transform: translate(-2px, -2px);
-    }
-    60% {
-      transform: translate(2px, 2px);
-    }
-    80% {
-      transform: translate(2px, -2px);
-    }
-  }
-
-  @keyframes glitch-2 {
-    0%,
-    100% {
-      transform: translate(0);
-    }
-    25% {
-      transform: translate(1px, 1px);
-    }
-    75% {
-      transform: translate(-1px, -1px);
-    }
-  }
-
-  @keyframes glitch-3 {
-    0%,
-    100% {
-      transform: translate(0);
-    }
-    25% {
-      transform: translate(-1px, -1px);
-    }
-    75% {
-      transform: translate(1px, 1px);
-    }
-  }
-
-  @keyframes scanlines {
-    from {
-      transform: translateY(0);
-    }
-    to {
-      transform: translateY(4px);
-    }
-  }
-
-  .loading-text {
-    color: var(--subtext0);
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    animation: pulse 2s ease-in-out infinite;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.6;
+      filter: drop-shadow(0 0 5px var(--text)) drop-shadow(0 0 10px var(--text))
+        drop-shadow(0 0 20px var(--blue)) drop-shadow(0 0 40px var(--blue));
     }
     50% {
-      opacity: 1;
-    }
-  }
-
-  .app-container {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .title-wrapper {
-    position: relative;
-    margin-bottom: 2rem;
-  }
-
-  .neon-title {
-    font-family: "Courier New", monospace;
-    font-size: 64px;
-    font-weight: bold;
-    color: var(--text);
-    text-shadow:
-      0 0 5px var(--text),
-      0 0 10px var(--text),
-      0 0 20px var(--blue),
-      0 0 40px var(--blue),
-      0 0 80px var(--blue);
-    animation: pulse 4s ease-in-out infinite;
-  }
-
-  .neon-flare {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      45deg,
-      transparent 45%,
-      var(--blue) 48%,
-      var(--text) 50%,
-      var(--blue) 52%,
-      transparent 55%
-    );
-    background-size: 200% 200%;
-    animation: flare 4s ease-in-out infinite;
-    opacity: 0.1;
-    filter: blur(3px);
-  }
-
-  .cyber-spinner {
-    width: 50px;
-    height: 50px;
-    margin: 20px;
-    background: transparent;
-    border: 3px solid var(--surface0);
-    border-top: 3px solid var(--blue);
-    border-right: 3px solid var(--blue);
-    border-radius: 50%;
-    position: relative;
-    animation: spin 1s linear infinite;
-  }
-
-  .cyber-spinner::before {
-    content: "";
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    border-top-color: var(--blue);
-    animation: spin 2s linear infinite;
-  }
-
-  .loading-text {
-    color: var(--text);
-    font-size: 16px;
-    font-family: "Courier New", monospace;
-    letter-spacing: 2px;
-    animation: glow 2s ease-in-out infinite alternate;
-  }
-
-  @keyframes pulse {
-    0%,
-    100% {
-      text-shadow:
-        0 0 5px var(--text),
-        0 0 10px var(--text),
-        0 0 20px var(--blue),
-        0 0 40px var(--blue),
-        0 0 80px var(--blue);
-    }
-    50% {
-      text-shadow:
-        0 0 10px var(--text),
-        0 0 20px var(--text),
-        0 0 40px var(--blue),
-        0 0 80px var(--blue),
-        0 0 120px var(--blue);
-    }
-  }
-
-  @keyframes flare {
-    0%,
-    100% {
-      background-position: 200% 200%;
-    }
-    50% {
-      background-position: 0% 0%;
-    }
-  }
-
-  @keyframes glow {
-    from {
-      text-shadow:
-        0 0 2px var(--text),
-        0 0 4px var(--text),
-        0 0 6px var(--blue);
+      filter: drop-shadow(0 0 10px var(--text))
+        drop-shadow(0 0 20px var(--text)) drop-shadow(0 0 40px var(--blue))
+        drop-shadow(0 0 80px var(--blue));
     }
   }
 </style>
