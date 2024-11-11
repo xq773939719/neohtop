@@ -226,12 +226,6 @@ section {
   animation: float 6s ease-in-out infinite;
 }
 
-.tech-stack {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
 /* Responsive design */
 @media (max-width: 1024px) {
   .hero {
@@ -1354,4 +1348,82 @@ footer {
 #current-version {
   font-weight: 600;
   color: var(--primary-color);
+}
+
+/* Download Section Responsive Styles */
+@media (max-width: 768px) {
+  .download-options {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .download-group {
+    width: 100%;
+  }
+
+  .platform-options {
+    flex-direction: column;
+  }
+
+  .download-button {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .linux-downloads {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .linux-downloads h4 {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Adjust text size for better readability on mobile */
+  .button-text .primary {
+    font-size: 0.9rem;
+  }
+
+  .button-text .secondary {
+    font-size: 0.8rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .download-container {
+    padding: 1rem;
+  }
+
+  .download-stats {
+    font-size: 0.9rem;
+  }
+
+  .platform-title {
+    font-size: 1.2rem;
+  }
+}
+
+.download-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border-radius: 6px;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+#download-count {
+  font-weight: bold;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+/* Adjust the existing download-subtitle margin */
+.download-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  margin-top: 0.5rem;
 }

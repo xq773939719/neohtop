@@ -53,18 +53,12 @@
       <div class="hero-content">
         <div class="hero-text">
           <h1 class="gradient-text">Monitor Your System<br>With Style</h1>
-          <p class="hero-subtitle">A beautiful, lightning-fast system monitor built with Rust and Svelte. Experience
-            real-time performance monitoring like never before.</p>
+          <p class="hero-subtitle">A beautiful, lightning-fast cross-platform system monitor.</p>
           <div class="hero-cta">
             <a href="#download" class="primary-button">Download Now</a>
             <a href="https://github.com/abdenasser/neohtop" class="secondary-button">
               View on GitHub
             </a>
-          </div>
-          <div class="tech-stack">
-            <span class="tech-badge">Rust</span>
-            <span class="tech-badge">Tauri</span>
-            <span class="tech-badge">Svelte</span>
           </div>
           <div class="badges">
             <div class="ph-badge-placeholder">
@@ -127,11 +121,11 @@
 
     <section id="download" class="downloads">
       <div class="download-container glass-card">
-        <h2>Download NeoHtop</h2>
-        <p class="download-subtitle">Choose your platform to get started</p>
-        <div class="version-info">
-          Current Version: <span id="current-version">Loading...</span>
+        <h2>Download NeoHtop <span id="current-version">Loading...</span></h2>
+        <div class="download-stats">
+          <span id="download-count">...</span> Total Downloads
         </div>
+        <p class="download-subtitle">Choose your platform to get started</p>
         <div class="download-options">
           <!-- macOS Downloads -->
           <div class="download-group">
@@ -402,68 +396,6 @@
       </p>
     </div>
   </footer>
-  <script>
-    async function updateVersion() {
-      try {
-        const response = await fetch('https://api.github.com/repos/Abdenasser/neohtop/releases/latest');
-        const data = await response.json();
-        const version = data.tag_name;
-
-        // Extract just the version number (e.g., "1.0.6" from "macos-nightly-1.0.6")
-        const versionNumber = version.match(/\d+\.\d+\.\d+/)?.[0];
-        document.getElementById('current-version').textContent = versionNumber;
-
-        if (versionNumber) {
-          // Update all download URLs with the latest version
-          const downloadLinks = document.querySelectorAll('.download-button');
-          downloadLinks.forEach(link => {
-            const platform = link.getAttribute('data-type');
-            let newHref;
-
-            switch (platform) {
-              case 'macos-intel':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/intel-NeoHtop_${versionNumber}_x64.dmg`;
-                break;
-              case 'macos-silicon':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/silicon-NeoHtop_${versionNumber}_aarch64.dmg`;
-                break;
-              case 'windows':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/NeoHtop_${versionNumber}_x64.exe`;
-                break;
-              case 'linux-deb-x64':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/NeoHtop_${versionNumber}_x86_64.deb`;
-                break;
-              case 'linux-appimage-x64':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/NeoHtop_${versionNumber}_x86_64.AppImage`;
-                break;
-              case 'linux-rpm-x64':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/NeoHtop_${versionNumber}_x86_64.rpm`;
-                break;
-              case 'linux-deb-arm64':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/NeoHtop_${versionNumber}_aarch64.deb`;
-                break;
-              case 'linux-appimage-arm64':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/NeoHtop_${versionNumber}_aarch64.AppImage`;
-                break;
-              case 'linux-rpm-arm64':
-                newHref = `https://github.com/Abdenasser/neohtop/releases/download/v${versionNumber}/NeoHtop_${versionNumber}_aarch64.rpm`;
-                break;
-            }
-
-            if (newHref) {
-              link.href = newHref;
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Failed to fetch version:', error);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      updateVersion();
-    });
-  </script>
 </body>
 
 </html>
