@@ -14,11 +14,18 @@
   const themeGroups = [
     {
       label: "Dark",
-      themes: ["catppuccin", "dracula", "monokaiPro", "tokyoNight"],
+      themes: [
+        "catppuccin",
+        "dracula",
+        "monokaiPro",
+        "tokyoNight",
+        "ayuDark",
+        "ayuMirage",
+      ],
     },
     {
       label: "Light",
-      themes: ["githubLight", "solarizedLight", "oneLight"],
+      themes: ["githubLight", "solarizedLight", "oneLight", "ayuLight"],
     },
     {
       label: "Warm",
