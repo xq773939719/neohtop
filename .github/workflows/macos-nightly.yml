@@ -51,7 +51,7 @@ jobs:
       - name: Build for Intel Mac
         run: |
           echo "Building for Intel Mac..."
-          npm run tauri build -- --target x86_64-apple-darwin --bundles dmg
+          npm run tauri build -- --target x86_64-apple-darwin --bundles dmg --config "{\"bundle\":{\"macOS\":{\"signingIdentity\": \"Developer ID Application: Abdenasser Elidrissi (785JV74B9Y)\"}}}"
           # Rename the Intel build and store the filename
           cd src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/
           for f in *.dmg; do 
@@ -66,7 +66,7 @@ jobs:
       - name: Build for Apple Silicon
         run: |
           echo "Building for aarch64..."
-          npm run tauri build -- --target aarch64-apple-darwin --bundles dmg
+          npm run tauri build -- --target aarch64-apple-darwin --bundles dmg --config "{\"bundle\":{\"macOS\":{\"signingIdentity\": \"Developer ID Application: Abdenasser Elidrissi (785JV74B9Y)\"}}}"
           # Rename the Apple Silicon build and store the filename
           cd src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
           for f in *.dmg; do 
