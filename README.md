@@ -33,6 +33,11 @@
 - 🎯 Sort by any column
 - 🔄 Auto-refresh system stats
 
+Note: Some processes require monitoring with sudo privileges. To monitor these processes, NeoHtop must be launched with sudo:
+
+- macOS: `sudo /path/to/NeoHtop.app/Contents/MacOS/NeoHtop` (typically `sudo /Applications/NeoHtop.app/Contents/MacOS/NeoHtop`)
+- Linux: `pkexec /path/to/neohtop` (recommended)
+
 ## Tech Stack
 
 - **Frontend**: SvelteKit, TypeScript
