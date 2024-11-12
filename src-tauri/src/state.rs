@@ -1,35 +1,41 @@
-use crate::types::ProcessStaticInfo;
-use std::collections::HashMap;
-use std::sync::Mutex;
-use std::time::Instant;
-use sysinfo::{NetworkExt, NetworksExt, System, SystemExt};
+//! Application state management
+//!
+//! This module handles the global application state, including system monitoring
+//! and process tracking capabilities.
 
+use crate::monitoring::{ProcessMonitor, SystemMonitor};
+use std::sync::Mutex;
+use sysinfo::{System, SystemExt};
+
+/// Global application state
+///
+/// Maintains thread-safe access to system information and monitoring components
+#[derive(Debug)]
 pub struct AppState {
+    /// System information handler
     pub sys: Mutex<System>,
-    pub process_cache: Mutex<HashMap<u32, ProcessStaticInfo>>,
-    pub last_network_update: Mutex<(Instant, u64, u64)>,
+    /// Process monitoring component
+    pub process_monitor: Mutex<ProcessMonitor>,
+    /// System statistics monitoring component
+    pub system_monitor: Mutex<SystemMonitor>,
 }
 
 impl AppState {
+    /// Creates a new instance of the application state
+    ///
+    /// Initializes system monitoring and process tracking components
+    ///
+    /// # Returns
+    ///
+    /// A new `AppState` instance with initialized monitors
     pub fn new() -> Self {
         let mut sys = System::new();
         sys.refresh_all();
 
-        let initial_rx = sys
-            .networks()
-            .iter()
-            .map(|(_, data)| data.total_received())
-            .sum();
-        let initial_tx = sys
-            .networks()
-            .iter()
-            .map(|(_, data)| data.total_transmitted())
-            .sum();
-
         Self {
+            process_monitor: Mutex::new(ProcessMonitor::new()),
+            system_monitor: Mutex::new(SystemMonitor::new(&sys)),
             sys: Mutex::new(sys),
-            process_cache: Mutex::new(HashMap::new()),
-            last_network_update: Mutex::new((Instant::now(), initial_rx, initial_tx)),
         }
     }
 }

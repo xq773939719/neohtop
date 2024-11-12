@@ -1,20 +1,30 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+//! NeoHtop - A modern system monitor built with Tauri
+//!
+//! This is the main entry point for the application. It sets up the Tauri
+//! application, initializes plugins, and configures window effects.
 
 mod commands;
+mod monitoring;
 mod state;
-mod system;
-mod types;
-mod window;
+mod ui;
 
 use state::AppState;
 use tauri::Manager;
-use window::setup_window_effects;
 
+/// Main entry point for the application
+///
+/// # Panics
+///
+/// Will panic if:
+/// - Unable to create the main window
+/// - Failed to apply window effects
+/// - Failed to initialize the application state
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
-            setup_window_effects(&window).expect("Failed to apply window effects");
+            ui::setup_window_effects(&window).expect("Failed to apply window effects");
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
@@ -22,7 +32,7 @@ fn main() {
         .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![
             commands::get_processes,
-            commands::kill_process
+            commands::kill_process,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
