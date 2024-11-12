@@ -1427,3 +1427,39 @@ footer {
   margin-bottom: 2rem;
   margin-top: 0.5rem;
 }
+
+/* Testimonials Section */
+.testimonials {
+  padding: 4rem 0;
+  background: var(--background);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.testimonial-grid {
+  column-count: 3;
+  column-gap: 2rem;
+  margin-top: 3rem;
+  padding: 0 2rem;
+}
+
+/* Ensure Twitter embeds stack properly */
+.twitter-tweet {
+  margin: 0 0 2rem 0 !important;
+  width: 100% !important;
+  break-inside: avoid;
+  display: inline-block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .testimonial-grid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonial-grid {
+    column-count: 1;
+  }
+}
