@@ -388,6 +388,12 @@
     overflow: hidden;
   }
 
+  .app-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
   .alert {
     margin: 8px;
     padding: 8px 12px;
