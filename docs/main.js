@@ -151,3 +151,24 @@ document.addEventListener('DOMContentLoaded', () => {
   updateVersion();
   fetchDownloadStats();
 });
+
+
+// ===============================
+// Mobile Navigation
+// ===============================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const menuButton = document.querySelector('.menu-button');
+  const navLinks = document.querySelector('.nav-links');
+
+  menuButton.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!navLinks.contains(e.target) && !menuButton.contains(e.target)) {
+      navLinks.classList.remove('active');
+    }
+  });
+});
