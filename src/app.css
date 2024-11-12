@@ -106,6 +106,10 @@ body {
   z-index: 100;
 }
 
+[data-theme="glassy"] .btn-clear {
+  z-index: 100;
+}
+
 [data-theme="glassy"] tr.pinned,
 [data-theme="glassy"] tr:hover {
   background: rgba(24, 24, 37, 0.3) !important;
