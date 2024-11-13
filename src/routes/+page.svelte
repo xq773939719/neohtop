@@ -255,18 +255,11 @@
     selectedProcessPid = null;
   }
 
-  let minLoadingTimer: ReturnType<typeof setTimeout>;
-  const MIN_LOADING_TIME = 2000; // Show loading screen for at least 2 seconds
-
   onMount(async () => {
-    const loadingPromise = Promise.all([getProcesses()]);
-    const timerPromise = new Promise((resolve) => {
-      minLoadingTimer = setTimeout(resolve, MIN_LOADING_TIME);
-    });
-
     try {
-      // Wait for both the data to load AND the minimum time to pass
-      await Promise.all([loadingPromise, timerPromise]);
+      await getProcesses();
+    } catch (error) {
+      console.error("Failed to load processes:", error);
     } finally {
       isLoading = false;
     }
@@ -277,7 +270,6 @@
 
   onDestroy(() => {
     if (intervalId) clearInterval(intervalId);
-    if (minLoadingTimer) clearTimeout(minLoadingTimer);
   });
 </script>
 
