@@ -40,3 +40,76 @@ export interface Column {
   required?: boolean;
   format?: (value: any) => string;
 }
+
+export interface Theme {
+  name: string;
+  label: string;
+  colors: {
+    base: string;
+    mantle: string;
+    crust: string;
+    text: string;
+    subtext0: string;
+    subtext1: string;
+    surface0: string;
+    surface1: string;
+    surface2: string;
+    overlay0: string;
+    overlay1: string;
+    blue: string;
+    lavender: string;
+    sapphire: string;
+    sky: string;
+    red: string;
+    maroon: string;
+    peach: string;
+    yellow: string;
+    green: string;
+    teal: string;
+  };
+}
+
+export interface AppConfig {
+  appearance: {
+    columnVisibility: Record<string, boolean>;
+  };
+  behavior: {
+    itemsPerPage: number;
+    refreshRate: number;
+    defaultStatusFilter: string;
+  };
+}
+
+export interface ColumnDefinition {
+  id: string;
+  label: string;
+  visible: boolean;
+  required?: boolean;
+}
+
+export interface StatusOption {
+  value: string;
+  label: string;
+}
+
+export interface RefreshRateOption {
+  value: number;
+  label: string;
+}
+
+export interface ToolBarProps {
+  searchTerm: string;
+  statusFilter: string;
+  itemsPerPage: number;
+  currentPage: number;
+  totalPages: number;
+  totalResults: number;
+  columns: ColumnDefinition[];
+  refreshRate: number;
+  isFrozen: boolean;
+}
+
+export interface SortConfig {
+  field: keyof Process;
+  direction: "asc" | "desc";
+}

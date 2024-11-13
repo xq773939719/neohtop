@@ -1,25 +1,11 @@
 <script lang="ts">
   import { faHardDrive } from "@fortawesome/free-solid-svg-icons";
-  import PanelHeader from "./PanelHeader.svelte";
-  import StatItem from "./StatItem.svelte";
-  import { formatPercentage } from "$lib/utils";
+  import { PanelHeader, StatItem } from "$lib/components";
+  import { formatBytes, formatPercentage } from "$lib/utils";
 
   export let diskTotalBytes: number;
   export let diskUsedBytes: number;
   export let diskFreeBytes: number;
-
-  function formatBytes(bytes: number): string {
-    const units = ["B", "KB", "MB", "GB", "TB"];
-    let value = bytes;
-    let unitIndex = 0;
-
-    while (value >= 1024 && unitIndex < units.length - 1) {
-      value /= 1024;
-      unitIndex++;
-    }
-
-    return `${value.toFixed(1)} ${units[unitIndex]}`;
-  }
 
   $: diskUsagePercentage = (diskUsedBytes / diskTotalBytes) * 100;
 </script>

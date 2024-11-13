@@ -21,7 +21,7 @@
     <div
       class="usage-bar {getUsageClass(value)}"
       style="transform: translateX({value - 100}%);"
-    />
+    ></div>
   </div>
   <span class="value">{Math.round(value)}%</span>
 </div>

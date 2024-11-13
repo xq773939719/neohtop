@@ -1,7 +1,6 @@
 <script lang="ts">
   import { faServer } from "@fortawesome/free-solid-svg-icons";
-  import PanelHeader from "./PanelHeader.svelte";
-  import StatItem from "./StatItem.svelte";
+  import { PanelHeader, StatItem } from "$lib/components";
   import { formatUptime } from "$lib/utils";
 
   export let uptime: number;

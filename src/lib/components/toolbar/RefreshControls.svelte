@@ -1,24 +1,16 @@
 <script lang="ts">
   import Fa from "svelte-fa";
   import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-  import type { AppConfig } from "$lib/types/config";
-  import { configStore } from "$lib/stores/config";
-
+  import type { AppConfig } from "$lib/types";
+  import { settingsStore } from "$lib/stores";
+  import { REFRESH_RATE_OPTIONS } from "$lib/constants";
   export let refreshRate: number;
   export let isFrozen: boolean;
 
-  const refreshRateOptions = [
-    { value: 1000, label: "1s" },
-    { value: 2000, label: "2s" },
-    { value: 5000, label: "5s" },
-    { value: 10000, label: "10s" },
-    { value: 30000, label: "30s" },
-  ];
-
   function updateBehaviorConfig(key: keyof AppConfig["behavior"], value: any) {
-    configStore.updateConfig({
+    settingsStore.updateConfig({
       behavior: {
-        ...$configStore.behavior,
+        ...$settingsStore.behavior,
         [key]: value,
       },
     });
@@ -32,7 +24,7 @@
     on:change={() => updateBehaviorConfig("refreshRate", refreshRate)}
     disabled={isFrozen}
   >
-    {#each refreshRateOptions as option}
+    {#each REFRESH_RATE_OPTIONS as option}
       <option value={option.value}>{option.label}</option>
     {/each}
   </select>

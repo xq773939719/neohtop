@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Modal } from "$lib/components/modals";
-  import { formatStatus, formatUptime } from "$lib/utils";
+  import { Modal } from "$lib/components";
+  import { formatUptime, formatBytes, formatDate } from "$lib/utils";
   import type { Process } from "$lib/types";
   import Fa from "svelte-fa";
   import {
@@ -15,18 +15,6 @@
   export let onClose: () => void;
 
   $: currentProcess = process;
-
-  function formatBytes(bytes: number) {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    if (bytes < 1024 * 1024 * 1024)
-      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-  }
-
-  function formatDate(timestamp: number) {
-    return new Date(timestamp * 1000).toLocaleString();
-  }
 </script>
 
 <Modal {show} title="Process Details" maxWidth="700px" {onClose}>
@@ -54,9 +42,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-label">Status:</span>
-            <span class="detail-value">
-              {@html formatStatus(currentProcess.status)}
-            </span>
+            <span class="detail-value">{currentProcess.status}</span>
           </div>
         </div>
       </section>

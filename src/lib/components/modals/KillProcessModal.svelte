@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Modal } from "$lib/components/modals";
+  import { Modal } from "$lib/components";
 
   interface Process {
     pid: number;

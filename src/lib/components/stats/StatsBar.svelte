@@ -1,10 +1,12 @@
 <script lang="ts">
   import type { SystemStats } from "$lib/types";
-  import CpuPanel from "./CpuPanel.svelte";
-  import MemoryPanel from "./MemoryPanel.svelte";
-  import StoragePanel from "./StoragePanel.svelte";
-  import SystemPanel from "./SystemPanel.svelte";
-  import NetworkPanel from "./NetworkPanel.svelte";
+  import {
+    CpuPanel,
+    MemoryPanel,
+    StoragePanel,
+    SystemPanel,
+    NetworkPanel,
+  } from "$lib/components";
 
   export let systemStats: SystemStats | null = null;
 </script>

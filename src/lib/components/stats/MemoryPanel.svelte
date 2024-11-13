@@ -1,8 +1,6 @@
 <script lang="ts">
   import { faMemory } from "@fortawesome/free-solid-svg-icons";
-  import PanelHeader from "./PanelHeader.svelte";
-  import ProgressBar from "./ProgressBar.svelte";
-  import StatItem from "./StatItem.svelte";
+  import { PanelHeader, ProgressBar, StatItem } from "$lib/components";
   import { formatMemorySize, formatPercentage } from "$lib/utils";
 
   export let memoryTotal: number;

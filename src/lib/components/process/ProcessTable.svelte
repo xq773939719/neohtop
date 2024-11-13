@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Process, Column } from "$lib/types";
-  import TableHeader from "./TableHeader.svelte";
-  import ProcessRow from "./ProcessRow.svelte";
+  import { TableHeader, ProcessRow } from "$lib/components";
 
   export let processes: Process[];
   export let columns: Column[];
@@ -23,7 +22,6 @@
         <ProcessRow
           {process}
           {columns}
-          {systemStats}
           isPinned={pinnedProcesses.has(process.command)}
           isHighUsage={process.cpu_usage > 50 ||
             process.memory_usage / (systemStats?.memory_total || 0) > 0.1}

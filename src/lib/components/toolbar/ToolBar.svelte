@@ -1,12 +1,12 @@
 <script lang="ts">
-  import AppInfo from "../AppInfo.svelte";
   import {
+    AppInfo,
     StatusFilter,
     SearchBox,
     RefreshControls,
     PaginationControls,
     ColumnToggle,
-  } from "$lib/components/toolbar";
+  } from "$lib/components";
 
   export let searchTerm: string;
   export let statusFilter: string = "all";

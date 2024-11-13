@@ -1,6 +1,6 @@
 <script lang="ts">
   import { themeStore } from "$lib/stores";
-  import { themes } from "$lib/styles";
+  import { themes } from "$lib/definitions";
   import { fade } from "svelte/transition";
   import Fa from "svelte-fa";
   import {
@@ -8,51 +8,12 @@
     faChevronRight,
   } from "@fortawesome/free-solid-svg-icons";
   import { platform } from "@tauri-apps/plugin-os";
+  import { THEME_GROUPS } from "$lib/constants";
 
   let showMenu = false;
 
   const themeGroups = [
-    {
-      label: "Dark",
-      themes: [
-        "catppuccin",
-        "dracula",
-        "monokaiPro",
-        "tokyoNight",
-        "ayuDark",
-        "ayuMirage",
-      ],
-    },
-    {
-      label: "Light",
-      themes: ["githubLight", "solarizedLight", "oneLight", "ayuLight"],
-    },
-    {
-      label: "Warm",
-      themes: ["gruvbox"],
-    },
-    {
-      label: "Cool",
-      themes: ["nord", "oneDark"],
-    },
-    {
-      label: "Fun",
-      themes: [
-        "bubblegum",
-        "rosePine",
-        "cottonCandy",
-        "synthwave",
-        "candyfloss",
-      ],
-    },
-    {
-      label: "Retro",
-      themes: ["terminal", "amber", "ibmPC"],
-    },
-    {
-      label: "Accessibility",
-      themes: ["highContrast"],
-    },
+    ...THEME_GROUPS,
     ...(platform() === "windows" || platform() === "macos"
       ? [
           {

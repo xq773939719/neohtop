@@ -1,13 +1,12 @@
 <script lang="ts">
-  import type { AppConfig } from "$lib/types/config";
-  import { configStore } from "$lib/stores/config";
+  import type { AppConfig } from "$lib/types";
+  import { settingsStore } from "$lib/stores";
+  import { ITEMS_PER_PAGE_OPTIONS } from "$lib/constants";
 
   export let itemsPerPage: number;
   export let currentPage: number;
   export let totalPages: number;
   export let totalResults: number;
-
-  const itemsPerPageOptions = [15, 25, 50, 100, 250, 500];
 
   function changePage(page: number) {
     if (page >= 1 && page <= totalPages) {
@@ -16,9 +15,9 @@
   }
 
   function updateBehaviorConfig(key: keyof AppConfig["behavior"], value: any) {
-    configStore.updateConfig({
+    settingsStore.updateConfig({
       behavior: {
-        ...$configStore.behavior,
+        ...$settingsStore.behavior,
         [key]: value,
       },
     });
@@ -32,7 +31,7 @@
     on:change={() => updateBehaviorConfig("itemsPerPage", itemsPerPage)}
     aria-label="Items per page"
   >
-    {#each itemsPerPageOptions as option}
+    {#each ITEMS_PER_PAGE_OPTIONS as option}
       <option value={option}>{option} per page</option>
     {/each}
   </select>

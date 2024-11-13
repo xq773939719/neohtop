@@ -1,7 +1,6 @@
 <script lang="ts">
   import { faMicrochip } from "@fortawesome/free-solid-svg-icons";
-  import PanelHeader from "./PanelHeader.svelte";
-  import ProgressBar from "./ProgressBar.svelte";
+  import { PanelHeader, ProgressBar } from "$lib/components";
   import { formatPercentage } from "$lib/utils";
 
   export let cpuUsage: number[];

@@ -1,11 +1,9 @@
 <script lang="ts">
   import type { Process, Column } from "$lib/types";
-  import ProcessIcon from "./ProcessIcon.svelte";
-  import ActionButtons from "./ActionButtons.svelte";
+  import { ProcessIcon, ActionButtons } from "$lib/components";
 
   export let process: Process;
   export let columns: Column[];
-  export let systemStats: { memory_total: number } | null;
   export let isPinned: boolean;
   export let isHighUsage: boolean;
 

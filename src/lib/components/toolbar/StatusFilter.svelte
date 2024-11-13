@@ -1,22 +1,14 @@
 <script lang="ts">
-  import { statusMap } from "$lib/utils";
-  import type { AppConfig } from "$lib/types/config";
-  import { configStore } from "$lib/stores/config";
+  import { STATUS_OPTIONS } from "$lib/constants";
+  import type { AppConfig } from "$lib/types";
+  import { settingsStore } from "$lib/stores";
 
   export let statusFilter: string = "all";
 
-  const statusOptions = [
-    { value: "all", label: "All Statuses" },
-    ...Object.values(statusMap).map((status) => ({
-      value: status.label,
-      label: status.label,
-    })),
-  ];
-
   function updateBehaviorConfig(key: keyof AppConfig["behavior"], value: any) {
-    configStore.updateConfig({
+    settingsStore.updateConfig({
       behavior: {
-        ...$configStore.behavior,
+        ...$settingsStore.behavior,
         [key]: value,
       },
     });
@@ -29,7 +21,7 @@
     on:change={() => updateBehaviorConfig("defaultStatusFilter", statusFilter)}
     class="select-input"
   >
-    {#each statusOptions as option}
+    {#each STATUS_OPTIONS as option}
       <option value={option.value}>{option.label}</option>
     {/each}
   </select>

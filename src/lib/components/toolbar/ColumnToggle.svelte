@@ -4,8 +4,7 @@
     faChevronDown,
     faChevronRight,
   } from "@fortawesome/free-solid-svg-icons";
-  import { configStore } from "$lib/stores/config";
-  import type { AppConfig } from "$lib/types/config";
+  import { settingsStore } from "$lib/stores";
 
   export let columns: Array<{
     id: string;
@@ -17,10 +16,10 @@
   let showColumnMenu = false;
 
   function handleColumnVisibilityChange(columnId: string, visible: boolean) {
-    configStore.updateConfig({
+    settingsStore.updateConfig({
       appearance: {
         columnVisibility: {
-          ...$configStore.appearance.columnVisibility,
+          ...$settingsStore.appearance.columnVisibility,
           [columnId]: visible,
         },
       },
