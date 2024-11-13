@@ -7,6 +7,7 @@
   import Fa from "svelte-fa";
   import type { Process, Column } from "$lib/types";
   import ProcessIcon from "./ProcessIcon.svelte";
+  import TableHeader from "./TableHeader.svelte";
 
   export let processes: Process[];
   export let columns: Column[];
@@ -18,33 +19,11 @@
   export let onTogglePin: (command: string) => void;
   export let onShowDetails: (process: Process) => void;
   export let onKillProcess: (process: Process) => void;
-
-  function getSortIndicator(field: keyof Process) {
-    if (sortConfig.field !== field) return "↕";
-    return sortConfig.direction === "asc" ? "↑" : "↓";
-  }
 </script>
 
 <div class="table-container">
   <table>
-    <thead>
-      <tr>
-        {#each columns.filter((col) => col.visible) as column}
-          <th class="sortable" on:click={() => onToggleSort(column.id)}>
-            <div class="th-content">
-              {column.label}
-              <span
-                class="sort-indicator"
-                class:active={sortConfig.field === column.id}
-              >
-                {getSortIndicator(column.id)}
-              </span>
-            </div>
-          </th>
-        {/each}
-        <th>Actions</th>
-      </tr>
-    </thead>
+    <TableHeader {columns} {sortConfig} {onToggleSort} />
     <tbody>
       {#each processes as process (process.pid)}
         <tr
@@ -147,19 +126,6 @@
     font-size: 13px;
   }
 
-  th {
-    position: sticky;
-    top: 0;
-    background: var(--mantle);
-    text-align: left;
-    padding: 8px 12px;
-    font-weight: 500;
-    color: var(--subtext0);
-    border-bottom: 1px solid var(--surface0);
-    transition: background-color 0.2s ease;
-    z-index: 3;
-  }
-
   td {
     padding: 6px 12px;
     border-bottom: 1px solid var(--surface0);
@@ -178,33 +144,6 @@
     max-width: 0;
   }
 
-  .sortable {
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .th-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .sort-indicator {
-    color: var(--overlay0);
-    font-size: 12px;
-    opacity: 0.5;
-    transition: all 0.2s ease;
-  }
-
-  .sort-indicator.active {
-    color: var(--blue);
-    opacity: 1;
-  }
-
-  .sortable:hover .sort-indicator {
-    opacity: 1;
-  }
-
   .high-usage {
     background-color: color-mix(in srgb, var(--red) 10%, transparent);
   }
@@ -219,12 +158,6 @@
 
   tr.pinned:hover {
     background-color: color-mix(in srgb, var(--blue) 15%, transparent);
-  }
-
-  th:last-child {
-    width: 120px;
-    min-width: 120px;
-    max-width: 120px;
   }
 
   td:last-child {
