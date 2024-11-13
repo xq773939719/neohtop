@@ -2,7 +2,7 @@
   import { invoke } from "@tauri-apps/api/core";
   import { onMount, onDestroy } from "svelte";
   import { StatsBar } from "$lib/components/stats";
-  import ToolBar from "$lib/components/ToolBar.svelte";
+  import { ToolBar } from "$lib/components/toolbar";
   import { ProcessTable } from "$lib/components/process";
   import { ProcessDetailsModal } from "$lib/components/modals";
   import { KillProcessModal } from "$lib/components/modals";

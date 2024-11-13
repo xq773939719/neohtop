@@ -1,5 +1,5 @@
 <script lang="ts">
-  import AppInfo from "./AppInfo.svelte";
+  import AppInfo from "../AppInfo.svelte";
   import { statusMap } from "$lib/utils";
   import Fa from "svelte-fa";
   import {
@@ -10,6 +10,7 @@
   } from "@fortawesome/free-solid-svg-icons";
   import { configStore } from "$lib/stores/config";
   import type { AppConfig } from "$lib/types/config";
+  import StatusFilter from "./StatusFilter.svelte";
   export let searchTerm: string;
   export let statusFilter: string = "all";
   export let itemsPerPage: number;
@@ -87,18 +88,7 @@
         {/if}
       </div>
     </div>
-    <div class="toolbar-group">
-      <select
-        bind:value={statusFilter}
-        on:change={() =>
-          updateBehaviorConfig("defaultStatusFilter", statusFilter)}
-        class="select-input"
-      >
-        {#each statusOptions as option}
-          <option value={option.value}>{option.label}</option>
-        {/each}
-      </select>
-    </div>
+    <StatusFilter bind:statusFilter />
 
     <div class="toolbar-spacer"></div>
 
