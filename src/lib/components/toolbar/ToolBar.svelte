@@ -12,6 +12,7 @@
   import type { AppConfig } from "$lib/types/config";
   import StatusFilter from "./StatusFilter.svelte";
   import SearchBox from "./SearchBox.svelte";
+  import RefreshControls from "./RefreshControls.svelte";
   export let searchTerm: string;
   export let statusFilter: string = "all";
   export let itemsPerPage: number;
@@ -35,14 +36,6 @@
       value: status.label,
       label: status.label,
     })),
-  ];
-
-  const refreshRateOptions = [
-    { value: 1000, label: "1s" },
-    { value: 2000, label: "2s" },
-    { value: 5000, label: "5s" },
-    { value: 10000, label: "10s" },
-    { value: 30000, label: "30s" },
   ];
 
   function changePage(page: number) {
@@ -166,32 +159,7 @@
       {/if}
     </div>
 
-    <div class="toolbar-group">
-      <div class="refresh-controls">
-        <select
-          class="select-input"
-          bind:value={refreshRate}
-          on:change={() => updateBehaviorConfig("refreshRate", refreshRate)}
-          disabled={isFrozen}
-        >
-          {#each refreshRateOptions as option}
-            <option value={option.value}>{option.label}</option>
-          {/each}
-        </select>
-        <button
-          class="btn-action"
-          class:frozen={isFrozen}
-          on:click={() => (isFrozen = !isFrozen)}
-          title={isFrozen ? "Resume Updates" : "Pause Updates"}
-        >
-          {#if isFrozen}
-            <Fa icon={faPlay} />
-          {:else}
-            <Fa icon={faPause} />
-          {/if}
-        </button>
-      </div>
-    </div>
+    <RefreshControls bind:refreshRate bind:isFrozen />
 
     <AppInfo />
   </div>
