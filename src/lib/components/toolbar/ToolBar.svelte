@@ -13,6 +13,7 @@
   import StatusFilter from "./StatusFilter.svelte";
   import SearchBox from "./SearchBox.svelte";
   import RefreshControls from "./RefreshControls.svelte";
+  import PaginationControls from "./PaginationControls.svelte";
   export let searchTerm: string;
   export let statusFilter: string = "all";
   export let itemsPerPage: number;
@@ -28,7 +29,6 @@
   export let refreshRate: number;
   export let isFrozen: boolean;
 
-  const itemsPerPageOptions = [15, 25, 50, 100, 250, 500];
   let showColumnMenu = false;
   const statusOptions = [
     { value: "all", label: "All Statuses" },
@@ -37,12 +37,6 @@
       label: status.label,
     })),
   ];
-
-  function changePage(page: number) {
-    if (page >= 1 && page <= totalPages) {
-      currentPage = page;
-    }
-  }
 
   function handleColumnVisibilityChange(columnId: string, visible: boolean) {
     configStore.updateConfig({
@@ -72,53 +66,12 @@
 
     <div class="toolbar-spacer"></div>
 
-    <div class="pagination-controls">
-      <select
-        class="select-input"
-        bind:value={itemsPerPage}
-        on:change={() => updateBehaviorConfig("itemsPerPage", itemsPerPage)}
-        aria-label="Items per page"
-      >
-        {#each itemsPerPageOptions as option}
-          <option value={option}>{option} per page</option>
-        {/each}
-      </select>
-
-      <div class="pagination">
-        <button
-          class="btn-page"
-          disabled={currentPage === 1}
-          on:click={() => changePage(1)}
-        >
-          ««
-        </button>
-        <button
-          class="btn-page"
-          disabled={currentPage === 1}
-          on:click={() => changePage(currentPage - 1)}
-        >
-          «
-        </button>
-        <div class="page-info">
-          <span>Page {currentPage} of {totalPages}</span>
-          <span class="results-info">({totalResults} processes)</span>
-        </div>
-        <button
-          class="btn-page"
-          disabled={currentPage === totalPages}
-          on:click={() => changePage(currentPage + 1)}
-        >
-          »
-        </button>
-        <button
-          class="btn-page"
-          disabled={currentPage === totalPages}
-          on:click={() => changePage(totalPages)}
-        >
-          »»
-        </button>
-      </div>
-    </div>
+    <PaginationControls
+      bind:itemsPerPage
+      bind:currentPage
+      {totalPages}
+      {totalResults}
+    />
     <div class="toolbar-spacer"></div>
 
     <div class="column-toggle">
@@ -253,79 +206,6 @@
     outline: none;
     border-color: var(--blue);
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--blue) 25%, transparent);
-  }
-
-  .pagination-controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .select-input {
-    padding: 6px 12px;
-    font-size: 12px;
-    color: var(--text);
-    background: var(--surface0);
-    border: 1px solid var(--surface1);
-    border-radius: 6px;
-    cursor: pointer;
-    appearance: none;
-    padding-right: 24px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23cdd6f4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-  }
-
-  .select-input:hover {
-    background-color: var(--surface1);
-  }
-
-  .select-input:focus {
-    outline: none;
-    border-color: var(--blue);
-  }
-
-  .pagination {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-page {
-    padding: 6px 10px;
-    font-size: 12px;
-    color: var(--text);
-    background: var(--surface0);
-    border: 1px solid var(--surface1);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .btn-page:hover:not(:disabled) {
-    background: var(--surface1);
-  }
-
-  .btn-page:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .page-info {
-    font-size: 12px;
-    color: var(--subtext0);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  .page-info span {
-    display: block;
-  }
-
-  .results-info {
-    color: var(--overlay0);
   }
 
   .column-toggle {
