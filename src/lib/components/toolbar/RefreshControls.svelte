@@ -35,9 +35,9 @@
     title={isFrozen ? "Resume Updates" : "Pause Updates"}
   >
     {#if isFrozen}
-      <Fa icon={faPlay} />
+      <Fa icon={faPlay} color="var(--red)" />
     {:else}
-      <Fa icon={faPause} />
+      <Fa icon={faPause} color="var(--subtext0)" />
     {/if}
   </button>
 </div>
@@ -62,6 +62,7 @@
     height: 28px;
     border: none;
     background: var(--surface0);
+    border: 1px solid var(--surface1);
     color: var(--text);
     border-radius: 6px;
     cursor: pointer;
@@ -73,8 +74,7 @@
   }
 
   .btn-action.frozen {
-    background: var(--blue);
-    color: var(--base);
+    background: var(--yellow);
   }
 
   .select-input {
