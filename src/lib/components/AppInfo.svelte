@@ -1,30 +1,15 @@
 <script lang="ts">
   import { getVersion } from "@tauri-apps/api/app";
   import { onMount } from "svelte";
-  import ThemeSwitcher from "./ThemeSwitcher.svelte";
+  import { ThemeSwitcher } from "$lib/components";
   import { faInfo } from "@fortawesome/free-solid-svg-icons";
   import Fa from "svelte-fa";
+  import { ASCII_ART, APP_INFO } from "$lib/constants";
 
   let version = "";
   let latestVersion = "";
   let showInfo = false;
   let hasUpdate = false;
-
-  const ASCII_ART = `
-    ███╗   ██╗███████╗ ██████╗ ██╗  ██╗████████╗ ██████╗ ██████╗ 
-    ████╗  ██║██╔════╝██╔═══██╗██║  ██║╚══██╔══╝██╔═══██╗██╔══██╗
-    ██╔██╗ ██║█████╗  ██║   ██║███████║   ██║   ██║   ██║██████╔╝
-    ██║╚██╗██║██╔══╝  ██║   ██║██╔══██║   ██║   ██║   ██║██╔═══╝ 
-    ██║ ╚████║███████╗╚██████╔╝██║  ██║   ██║   ╚██████╔╝██║     
-    ╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝     
-  `;
-
-  const APP_INFO = {
-    name: "NeoHtop",
-    developer: "Abdenasser",
-    github: "https://github.com/Abdenasser/neohtop",
-    stack: ["Tauri", "Rust", "Svelte", "TypeScript"],
-  };
 
   async function checkLatestVersion() {
     try {

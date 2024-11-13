@@ -1,13 +1,4 @@
-export interface AppConfig {
-  appearance: {
-    columnVisibility: Record<string, boolean>;
-  };
-  behavior: {
-    itemsPerPage: number;
-    refreshRate: number;
-    defaultStatusFilter: string;
-  };
-}
+import type { AppConfig } from "$lib/types";
 
 export const DEFAULT_CONFIG: AppConfig = {
   appearance: {
