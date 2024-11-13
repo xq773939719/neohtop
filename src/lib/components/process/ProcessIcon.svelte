@@ -2,6 +2,7 @@
   import * as SimpleIcons from "simple-icons";
 
   export let processName: string;
+  export let size: number = 16;
 
   function handleImageError(event: Event) {
     const img = event.target as HTMLImageElement;
@@ -20,11 +21,20 @@
         SimpleIcons[companyIconKey as keyof typeof SimpleIcons];
 
       if (companyIcon) {
-        return createSvgDataUrl(companyIcon);
+        // Use theme color instead of brand color
+        const color = getComputedStyle(document.documentElement)
+          .getPropertyValue("--text")
+          .trim();
+        const svg =
+          typeof companyIcon === "object" && "svg" in companyIcon
+            ? companyIcon.svg
+            : "";
+        const svgWithColor = svg.replace("<svg", `<svg fill="${color}"`);
+        return `data:image/svg+xml;base64,${btoa(svgWithColor)}`;
       }
     }
 
-    // Fall back to process name icon
+    // If no company icon found, fall back to original implementation
     const cleanName = name
       .replace(/\.(app|exe)$/i, "")
       .replace(/[-_./\\]/g, " ")
@@ -35,18 +45,22 @@
     const formattedName =
       cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
     const iconKey = `si${formattedName}`;
-    const simpleIcon =
-      SimpleIcons[iconKey as keyof typeof SimpleIcons] ||
-      SimpleIcons.siGhostery;
+    let simpleIcon = SimpleIcons[iconKey as keyof typeof SimpleIcons];
 
-    return createSvgDataUrl(simpleIcon);
-  }
+    // Default icon if no match found
+    if (!simpleIcon) {
+      simpleIcon = SimpleIcons.siGhostery;
+    }
 
-  function createSvgDataUrl(icon: any): string {
+    // Use theme color instead of brand color
     const color = getComputedStyle(document.documentElement)
       .getPropertyValue("--text")
       .trim();
-    const svg = typeof icon === "object" && "svg" in icon ? icon.svg : "";
+
+    const svg =
+      typeof simpleIcon === "object" && "svg" in simpleIcon
+        ? simpleIcon.svg
+        : "";
     const svgWithColor = svg.replace("<svg", `<svg fill="${color}"`);
     return `data:image/svg+xml;base64,${btoa(svgWithColor)}`;
   }
@@ -56,8 +70,8 @@
   class="process-icon"
   src={getIconForProcess(processName)}
   alt=""
-  height="16"
-  width="16"
+  height={size}
+  width={size}
   on:error={handleImageError}
 />
 
