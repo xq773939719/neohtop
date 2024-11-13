@@ -121,19 +121,16 @@ export function sortProcesses(
   sortConfig: SortConfig,
   pinnedProcesses: Set<string>,
 ): Process[] {
+  // Clear the cache before sorting
+  isPinned.clear();
+
   return [...processes].sort((a, b) => {
     // Cache pinned status
-    let aPin = isPinned.get(a.command);
-    if (aPin === undefined) {
-      aPin = pinnedProcesses.has(a.command);
-      isPinned.set(a.command, aPin);
-    }
+    let aPin = pinnedProcesses.has(a.command);
+    isPinned.set(a.command, aPin);
 
-    let bPin = isPinned.get(b.command);
-    if (bPin === undefined) {
-      bPin = pinnedProcesses.has(b.command);
-      isPinned.set(b.command, bPin);
-    }
+    let bPin = pinnedProcesses.has(b.command);
+    isPinned.set(b.command, bPin);
 
     // Quick pin comparison
     if (aPin !== bPin) {

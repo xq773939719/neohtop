@@ -13,12 +13,10 @@
   export let show = false;
   export let process: Process | null = null;
   export let onClose: () => void;
-
-  $: currentProcess = process;
 </script>
 
 <Modal {show} title="Process Details" maxWidth="700px" {onClose}>
-  {#if currentProcess}
+  {#if process}
     <div class="process-details">
       <!-- Basic Info Section -->
       <section class="detail-section">
@@ -26,23 +24,23 @@
         <div class="detail-grid">
           <div class="detail-row">
             <span class="detail-label">Name:</span>
-            <span class="detail-value">{currentProcess.name}</span>
+            <span class="detail-value">{process.name}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">PID:</span>
-            <span class="detail-value">{currentProcess.pid}</span>
+            <span class="detail-value">{process.pid}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Parent PID:</span>
-            <span class="detail-value">{currentProcess.ppid}</span>
+            <span class="detail-value">{process.ppid}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">User:</span>
-            <span class="detail-value">{currentProcess.user}</span>
+            <span class="detail-value">{process.user}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Status:</span>
-            <span class="detail-value">{currentProcess.status}</span>
+            <span class="detail-value">{process.status}</span>
           </div>
         </div>
       </section>
@@ -61,12 +59,12 @@
               <div class="progress-bar">
                 <div
                   class="progress-fill"
-                  style="width: {currentProcess.cpu_usage}%"
-                  class:high={currentProcess.cpu_usage > 50}
-                  class:critical={currentProcess.cpu_usage > 80}
+                  style="width: {process.cpu_usage}%"
+                  class:high={process.cpu_usage > 50}
+                  class:critical={process.cpu_usage > 80}
                 ></div>
               </div>
-              <span>{currentProcess.cpu_usage.toFixed(1)}%</span>
+              <span>{process.cpu_usage.toFixed(1)}%</span>
             </div>
           </div>
 
@@ -77,8 +75,8 @@
               <span>Memory Usage</span>
             </div>
             <div class="resource-stats">
-              <div>Physical: {formatBytes(currentProcess.memory_usage)}</div>
-              <div>Virtual: {formatBytes(currentProcess.virtual_memory)}</div>
+              <div>Physical: {formatBytes(process.memory_usage)}</div>
+              <div>Virtual: {formatBytes(process.virtual_memory)}</div>
             </div>
           </div>
 
@@ -89,8 +87,8 @@
               <span>Disk I/O</span>
             </div>
             <div class="resource-stats">
-              <div>Read: {formatBytes(currentProcess.disk_usage[0])}</div>
-              <div>Written: {formatBytes(currentProcess.disk_usage[1])}</div>
+              <div>Read: {formatBytes(process.disk_usage[0])}</div>
+              <div>Written: {formatBytes(process.disk_usage[1])}</div>
             </div>
           </div>
 
@@ -101,8 +99,8 @@
               <span>Time Information</span>
             </div>
             <div class="resource-stats">
-              <div>Started: {formatDate(currentProcess.start_time)}</div>
-              <div>Running: {formatUptime(currentProcess.run_time)}</div>
+              <div>Started: {formatDate(process.start_time)}</div>
+              <div>Running: {formatUptime(process.run_time)}</div>
             </div>
           </div>
         </div>
@@ -114,17 +112,17 @@
         <div class="detail-grid">
           <div class="detail-row full-width">
             <span class="detail-label">Command:</span>
-            <span class="detail-value command">{currentProcess.command}</span>
+            <span class="detail-value command">{process.command}</span>
           </div>
           <div class="detail-row full-width">
             <span class="detail-label">Root:</span>
-            <span class="detail-value path">{currentProcess.root}</span>
+            <span class="detail-value path">{process.root}</span>
           </div>
-          {#if currentProcess.environ.length > 0}
+          {#if process.environ.length > 0}
             <div class="detail-row full-width">
               <span class="detail-label">Environment:</span>
               <div class="detail-value env-vars">
-                {#each currentProcess.environ as env}
+                {#each process.environ as env}
                   <div class="env-var">{env}</div>
                 {/each}
               </div>

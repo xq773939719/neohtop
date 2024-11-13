@@ -47,139 +47,171 @@ const initialState: ProcessStore = {
 function createProcessStore() {
   const { subscribe, set, update } = writable<ProcessStore>(initialState);
 
-  return {
-    subscribe,
-    set,
-    update,
+  // Define all methods first
+  const setIsLoading = (isLoading: boolean) =>
+    update((state) => ({ ...state, isLoading }));
 
-    setIsLoading: (isLoading: boolean) =>
-      update((state) => ({ ...state, isLoading })),
+  const getProcesses = async () => {
+    try {
+      const result = await invoke<[Process[], SystemStats]>("get_processes");
+      update((state) => {
+        let updatedSelectedProcess = state.selectedProcess;
+        if (state.selectedProcessPid) {
+          updatedSelectedProcess =
+            result[0].find((p) => p.pid === state.selectedProcessPid) || null;
+        }
 
-    async getProcesses() {
-      try {
-        const result = await invoke<[Process[], SystemStats]>("get_processes");
-        update((state) => ({
+        return {
           ...state,
           processes: result[0],
           systemStats: result[1],
           error: null,
-        }));
-      } catch (e: unknown) {
-        update((state) => ({
-          ...state,
-          error: e instanceof Error ? e.message : String(e),
-        }));
-      }
-    },
-
-    async killProcess(pid: number) {
-      try {
-        const success = await invoke<boolean>("kill_process", { pid });
-        if (success) {
-          await this.getProcesses();
-        }
-      } catch (e: unknown) {
-        update((state) => ({
-          ...state,
-          error: e instanceof Error ? e.message : String(e),
-        }));
-      }
-    },
-
-    toggleSort(field: keyof Process) {
-      update((state) => ({
-        ...state,
-        sortConfig: {
-          field,
-          direction:
-            state.sortConfig.field === field
-              ? state.sortConfig.direction === "asc"
-                ? "desc"
-                : "asc"
-              : "desc",
-        },
-      }));
-    },
-
-    togglePin(command: string) {
-      update((state) => {
-        const newPinnedProcesses = new Set(state.pinnedProcesses);
-        if (newPinnedProcesses.has(command)) {
-          newPinnedProcesses.delete(command);
-        } else {
-          newPinnedProcesses.add(command);
-        }
-        return { ...state, pinnedProcesses: newPinnedProcesses };
+          selectedProcess: updatedSelectedProcess,
+        };
       });
-    },
-
-    setSearchTerm: (searchTerm: string) =>
-      update((state) => ({ ...state, searchTerm, currentPage: 1 })),
-    setIsFrozen: (isFrozen: boolean) =>
-      update((state) => ({ ...state, isFrozen })),
-    setCurrentPage: (currentPage: number) =>
-      update((state) => ({ ...state, currentPage })),
-
-    showProcessDetails(process: Process) {
+    } catch (e: unknown) {
       update((state) => ({
         ...state,
-        selectedProcessPid: process.pid,
-        selectedProcess: process,
-        showInfoModal: true,
+        error: e instanceof Error ? e.message : String(e),
       }));
-    },
+    }
+  };
 
-    closeProcessDetails() {
+  const killProcess = async (pid: number) => {
+    try {
+      update((state) => ({ ...state, isKilling: true }));
+      const success = await invoke<boolean>("kill_process", { pid });
+      if (success) {
+        await getProcesses();
+      } else {
+        throw new Error("Failed to kill process");
+      }
+    } catch (e: unknown) {
       update((state) => ({
         ...state,
-        showInfoModal: false,
-        selectedProcess: null,
-        selectedProcessPid: null,
+        error: e instanceof Error ? e.message : String(e),
       }));
-    },
+    } finally {
+      update((state) => ({ ...state, isKilling: false }));
+    }
+  };
 
-    confirmKillProcess(process: Process) {
-      update((state) => ({
-        ...state,
-        processToKill: process,
-        showConfirmModal: true,
-      }));
-    },
+  const toggleSort = (field: keyof Process) => {
+    update((state) => ({
+      ...state,
+      sortConfig: {
+        field,
+        direction:
+          state.sortConfig.field === field
+            ? state.sortConfig.direction === "asc"
+              ? "desc"
+              : "asc"
+            : "desc",
+      },
+    }));
+  };
 
-    closeConfirmKill() {
+  const togglePin = (command: string) => {
+    update((state) => {
+      const newPinnedProcesses = new Set(state.pinnedProcesses);
+      if (newPinnedProcesses.has(command)) {
+        newPinnedProcesses.delete(command);
+      } else {
+        newPinnedProcesses.add(command);
+      }
+      return { ...state, pinnedProcesses: newPinnedProcesses };
+    });
+  };
+
+  const setSearchTerm = (searchTerm: string) =>
+    update((state) => ({ ...state, searchTerm, currentPage: 1 }));
+
+  const setIsFrozen = (isFrozen: boolean) =>
+    update((state) => ({ ...state, isFrozen }));
+
+  const setCurrentPage = (currentPage: number) =>
+    update((state) => ({ ...state, currentPage }));
+
+  const showProcessDetails = (process: Process) => {
+    update((state) => ({
+      ...state,
+      selectedProcessPid: process.pid,
+      selectedProcess: process,
+      showInfoModal: true,
+    }));
+  };
+
+  const closeProcessDetails = () => {
+    update((state) => ({
+      ...state,
+      showInfoModal: false,
+      selectedProcess: null,
+      selectedProcessPid: null,
+    }));
+  };
+
+  const confirmKillProcess = (process: Process) => {
+    update((state) => ({
+      ...state,
+      processToKill: process,
+      showConfirmModal: true,
+    }));
+  };
+
+  const closeConfirmKill = () => {
+    update((state) => ({
+      ...state,
+      showConfirmModal: false,
+      processToKill: null,
+    }));
+  };
+
+  const handleConfirmKill = async () => {
+    let processToKill: Process | null = null;
+
+    let currentState: ProcessStore | undefined;
+    const unsubscribe = subscribe((state) => {
+      currentState = state;
+    });
+    unsubscribe();
+
+    if (currentState?.processToKill && "pid" in currentState.processToKill) {
+      processToKill = currentState.processToKill;
+    }
+
+    if (!processToKill?.pid) {
+      return;
+    }
+
+    try {
+      await killProcess(processToKill.pid);
+    } finally {
       update((state) => ({
         ...state,
         showConfirmModal: false,
         processToKill: null,
       }));
-    },
+    }
+  };
 
-    async handleConfirmKill() {
-      update((state) => ({ ...state, isKilling: true }));
-
-      try {
-        const pid = this.getState().processToKill?.pid;
-        if (pid) {
-          await this.killProcess(pid);
-        }
-      } finally {
-        update((state) => ({
-          ...state,
-          isKilling: false,
-          showConfirmModal: false,
-          processToKill: null,
-        }));
-      }
-    },
-
-    // Helper to get current state
-    getState() {
-      let currentState: ProcessStore | undefined;
-      subscribe((state) => {
-        currentState = state;
-      })();
-      return currentState!;
-    },
+  // Return all methods
+  return {
+    subscribe,
+    set,
+    update,
+    setIsLoading,
+    getProcesses,
+    killProcess,
+    toggleSort,
+    togglePin,
+    setSearchTerm,
+    setIsFrozen,
+    setCurrentPage,
+    showProcessDetails,
+    closeProcessDetails,
+    confirmKillProcess,
+    closeConfirmKill,
+    handleConfirmKill,
   };
 }
 
