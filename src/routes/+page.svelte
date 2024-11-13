@@ -1,154 +1,53 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
   import { onMount, onDestroy } from "svelte";
-  import StatsBar from "$lib/components/StatsBar.svelte";
-  import ToolBar from "$lib/components/ToolBar.svelte";
-  import ProcessTable from "$lib/components/ProcessTable.svelte";
-  import ProcessDetailsModal from "$lib/components/ProcessDetailsModal.svelte";
-  import KillProcessModal from "$lib/components/KillProcessModal.svelte";
-  import { formatMemorySize, formatStatus } from "$lib/utils";
-  import { themeStore } from "$lib/stores";
-  import type { Process, SystemStats, Column } from "$lib/types";
-  import TitleBar from "$lib/components/TitleBar.svelte";
-  import { configStore } from "$lib/stores/config";
+  import {
+    StatsBar,
+    ToolBar,
+    TitleBar,
+    ProcessTable,
+    ProcessDetailsModal,
+    KillProcessModal,
+  } from "$lib/components/index";
+  import { themeStore, settingsStore, processStore } from "$lib/stores/index";
+  import { column_definitions } from "$lib/definitions/columns";
+  import { filterProcesses, sortProcesses } from "$lib/utils";
 
-  let processes: Process[] = [];
-  let systemStats: SystemStats | null = null;
+  $: ({
+    processes,
+    systemStats,
+    error,
+    searchTerm,
+    isLoading,
+    currentPage,
+    pinnedProcesses,
+    selectedProcess,
+    showInfoModal,
+    showConfirmModal,
+    processToKill,
+    isKilling,
+    isFrozen,
+    sortConfig,
+  } = $processStore);
+
   let intervalId: number;
-  let error: string | null = null;
-  let searchTerm = "";
-  let isLoading = true;
-  let currentPage = 1;
-  let pinnedProcesses: Set<string> = new Set();
-  let selectedProcess: Process | null = null;
-  let showInfoModal = false;
-  let showConfirmModal = false;
-  let processToKill: Process | null = null;
-  let isKilling = false;
-  let isFrozen = false;
-  let selectedProcessPid: number | null = null;
 
-  let columnDefinitions: Column[] = [
-    { id: "name", label: "Process Name", visible: true, required: true },
-    { id: "pid", label: "PID", visible: true, required: false },
-    {
-      id: "status",
-      label: "Status",
-      visible: true,
-      format: formatStatus,
-    },
-    { id: "user", label: "User", visible: true },
-    {
-      id: "cpu_usage",
-      label: "CPU %",
-      visible: true,
-      format: (v) => v.toFixed(1) + "%",
-    },
-    {
-      id: "memory_usage",
-      label: "RAM",
-      visible: true,
-      format: (v) => (v / (1024 * 1024)).toFixed(1) + " MB",
-    },
-    {
-      id: "virtual_memory",
-      label: "VIRT",
-      visible: true,
-      format: (v) => formatMemorySize(v),
-    },
-    {
-      id: "disk_usage",
-      label: "Disk R/W",
-      visible: true,
-      format: (v) =>
-        `${(v[0] / (1024 * 1024)).toFixed(1)} / ${(v[1] / (1024 * 1024)).toFixed(1)} MB`,
-    },
-    { id: "ppid", label: "Parent PID", visible: false },
-    { id: "root", label: "Root", visible: false },
-    { id: "command", label: "Command", visible: false },
-    { id: "environ", label: "Environment Variables", visible: false },
-    { id: "session_id", label: "Session ID", visible: false },
-    {
-      id: "start_time",
-      label: "Start Time",
-      visible: false,
-      format: (v) => new Date(v * 1000).toLocaleString(), // v is the time where the process was started (in seconds) from epoch
-    },
-    {
-      id: "run_time",
-      label: "Run Time",
-      visible: true,
-      format: (v) => {
-        const seconds = v; // v is the time the process has been running in seconds
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const remainingSeconds = seconds % 60;
-        return `${hours}h ${minutes}m ${remainingSeconds}s`; // Format as HH:MM:SS
-      },
-    },
-  ];
-
-  // Merge column definitions with stored visibility
-  $: columns = columnDefinitions.map((col) => ({
+  $: columns = column_definitions.map((col) => ({
     ...col,
     visible:
       col.required ||
-      ($configStore.appearance.columnVisibility[col.id] ?? col.visible),
+      ($settingsStore.appearance.columnVisibility[col.id] ?? col.visible),
   }));
-  $: itemsPerPage = $configStore.behavior.itemsPerPage;
-  $: refreshRate = $configStore.behavior.refreshRate;
-  $: statusFilter = $configStore.behavior.defaultStatusFilter;
+  $: itemsPerPage = $settingsStore.behavior.itemsPerPage;
+  $: refreshRate = $settingsStore.behavior.refreshRate;
+  $: statusFilter = $settingsStore.behavior.defaultStatusFilter;
 
-  let sortConfig = {
-    field: "cpu_usage" as keyof Process,
-    direction: "desc" as "asc" | "desc",
-  };
+  $: filteredProcesses = filterProcesses(processes, searchTerm, statusFilter);
 
-  $: filteredProcesses = processes.filter((process) => {
-    let matchesSearch = searchTerm.length === 0;
-    searchTerm
-      .split(",")
-      .map((term) => term.trim())
-      .forEach((term) => {
-        const nameSubstringMatch = process.name
-          .toLowerCase()
-          .includes(term.toLowerCase());
-        const nameRegexMatch = (() => {
-          try {
-            return new RegExp(term, "i").test(process.name);
-          } catch {
-            return false;
-          }
-        })();
-        const commandMatch = process.command
-          .toLowerCase()
-          .includes(term.toLowerCase());
-        const pidMatch = process.pid.toString().includes(term);
-        matchesSearch ||=
-          nameSubstringMatch || nameRegexMatch || commandMatch || pidMatch;
-      });
-
-    const matchesStatus =
-      statusFilter === "all" ? true : process.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  $: sortedProcesses = filteredProcesses.sort((a, b) => {
-    const aPin = pinnedProcesses.has(a.command);
-    const bPin = pinnedProcesses.has(b.command);
-    if (aPin && !bPin) return -1;
-    if (!aPin && bPin) return 1;
-
-    const aValue = a[sortConfig.field];
-    const bValue = b[sortConfig.field];
-    const direction = sortConfig.direction === "asc" ? 1 : -1;
-
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      return direction * aValue.localeCompare(bValue);
-    }
-    return direction * (Number(aValue) - Number(bValue));
-  });
+  $: sortedProcesses = sortProcesses(
+    filteredProcesses,
+    sortConfig,
+    pinnedProcesses,
+  );
 
   $: totalPages = Math.ceil(filteredProcesses.length / itemsPerPage);
   $: paginatedProcesses = sortedProcesses.slice(
@@ -157,7 +56,6 @@
   );
 
   $: {
-    // Reset to first page when filtering or changing items per page
     if (searchTerm || itemsPerPage) {
       currentPage = 1;
     }
@@ -167,104 +65,21 @@
     if (intervalId) clearInterval(intervalId);
     if (!isFrozen) {
       intervalId = setInterval(() => {
-        getProcesses();
+        processStore.getProcesses();
       }, refreshRate);
     }
   }
 
-  $: if (selectedProcessPid && processes.length > 0) {
-    selectedProcess =
-      processes.find((p) => p.pid === selectedProcessPid) || null;
-  }
-
-  async function getProcesses() {
-    try {
-      const result = await invoke<[Process[], SystemStats]>("get_processes");
-      processes = result[0];
-      systemStats = result[1];
-      error = null;
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        error = e.message;
-      } else {
-        error = String(e);
-      }
-    }
-  }
-
-  async function killProcess(pid: number) {
-    try {
-      const success = await invoke<boolean>("kill_process", { pid });
-      if (success) {
-        await getProcesses();
-      }
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        error = e.message;
-      } else {
-        error = String(e);
-      }
-    }
-  }
-
-  function toggleSort(field: keyof Process) {
-    if (sortConfig.field === field) {
-      sortConfig.direction = sortConfig.direction === "asc" ? "desc" : "asc";
-    } else {
-      sortConfig.field = field;
-      sortConfig.direction = "desc";
-    }
-  }
-
-  function togglePin(command: string) {
-    if (pinnedProcesses.has(command)) {
-      pinnedProcesses.delete(command);
-    } else {
-      pinnedProcesses.add(command);
-    }
-    pinnedProcesses = pinnedProcesses; // Trigger reactivity
-  }
-
-  function showProcessDetails(process: Process) {
-    selectedProcessPid = process.pid;
-    selectedProcess = process;
-    showInfoModal = true;
-  }
-
-  function confirmKillProcess(process: Process) {
-    processToKill = process;
-    showConfirmModal = true;
-  }
-
-  async function handleConfirmKill() {
-    if (processToKill) {
-      isKilling = true;
-      try {
-        await killProcess(processToKill.pid);
-      } finally {
-        isKilling = false;
-        showConfirmModal = false;
-        processToKill = null;
-      }
-    }
-  }
-
-  function handleModalClose() {
-    showInfoModal = false;
-    selectedProcess = null;
-    selectedProcessPid = null;
-  }
-
   onMount(async () => {
     try {
-      await getProcesses();
+      await processStore.getProcesses();
     } catch (error) {
       console.error("Failed to load processes:", error);
     } finally {
-      isLoading = false;
+      processStore.setIsLoading(false);
     }
 
-    configStore.init();
+    settingsStore.init();
     themeStore.init();
   });
 
@@ -288,12 +103,12 @@
       {/if}
 
       <ToolBar
-        bind:searchTerm
+        bind:searchTerm={$processStore.searchTerm}
         bind:statusFilter
         bind:itemsPerPage
-        bind:currentPage
+        bind:currentPage={$processStore.currentPage}
         bind:refreshRate
-        bind:isFrozen
+        bind:isFrozen={$processStore.isFrozen}
         {totalPages}
         totalResults={filteredProcesses.length}
         bind:columns
@@ -309,10 +124,10 @@
         {systemStats}
         {sortConfig}
         {pinnedProcesses}
-        onToggleSort={toggleSort}
-        onTogglePin={togglePin}
-        onShowDetails={showProcessDetails}
-        onKillProcess={confirmKillProcess}
+        onToggleSort={processStore.toggleSort}
+        onTogglePin={processStore.togglePin}
+        onShowDetails={processStore.showProcessDetails}
+        onKillProcess={processStore.confirmKillProcess}
       />
     </main>
   </div>
@@ -321,18 +136,15 @@
 <ProcessDetailsModal
   show={showInfoModal}
   process={selectedProcess}
-  onClose={handleModalClose}
+  onClose={processStore.closeProcessDetails}
 />
 
 <KillProcessModal
   show={showConfirmModal}
   process={processToKill}
   {isKilling}
-  onClose={() => {
-    showConfirmModal = false;
-    processToKill = null;
-  }}
-  onConfirm={handleConfirmKill}
+  onClose={processStore.closeConfirmKill}
+  onConfirm={processStore.handleConfirmKill}
 />
 
 <style>

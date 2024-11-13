@@ -1,8 +1,8 @@
 import { writable } from "svelte/store";
-import type { AppConfig } from "$lib/types/config";
-import { DEFAULT_CONFIG } from "$lib/types/config";
+import type { AppConfig } from "$lib/types";
+import { DEFAULT_CONFIG } from "$lib/definitions/settings";
 
-function createConfigStore() {
+function createSettingsStore() {
   const { subscribe, set, update } = writable<AppConfig>(DEFAULT_CONFIG);
 
   return {
@@ -33,4 +33,4 @@ function createConfigStore() {
   };
 }
 
-export const configStore = createConfigStore();
+export const settingsStore = createSettingsStore();

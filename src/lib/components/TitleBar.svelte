@@ -1,18 +1,4 @@
 <script lang="ts">
-  import { Window } from "@tauri-apps/api/window";
-
-  const appWindow = new Window("main");
-  let isMaximized = false;
-
-  async function toggleMaximize() {
-    isMaximized = await appWindow.isMaximized();
-    if (isMaximized) {
-      await appWindow.unmaximize();
-    } else {
-      await appWindow.maximize();
-    }
-    isMaximized = await appWindow.isMaximized();
-  }
 </script>
 
 <div class="title-bar" data-tauri-drag-region>
