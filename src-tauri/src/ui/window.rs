@@ -5,14 +5,14 @@
 use tauri::WebviewWindow;
 
 #[cfg(target_os = "windows")]
-use window_vibrancy::apply_acrylic;
+use window_vibrancy::apply_blur;
 #[cfg(target_os = "macos")]
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
 
 /// Applies Windows-specific window effects
 #[cfg(target_os = "windows")]
 pub fn setup_window_effects(window: &WebviewWindow) -> Result<(), Box<dyn std::error::Error>> {
-    apply_acrylic(window, Some((0, 0, 25, 125)))?;
+    apply_blur(window, Some((0, 0, 25, 125)))?;
     Ok(())
 }
 
