@@ -11,6 +11,7 @@
   import { configStore } from "$lib/stores/config";
   import type { AppConfig } from "$lib/types/config";
   import StatusFilter from "./StatusFilter.svelte";
+  import SearchBox from "./SearchBox.svelte";
   export let searchTerm: string;
   export let statusFilter: string = "all";
   export let itemsPerPage: number;
@@ -73,21 +74,7 @@
 
 <div class="toolbar">
   <div class="toolbar-content">
-    <div class="search-box">
-      <div class="search-input-wrapper">
-        <input
-          type="text"
-          placeholder="Search processes"
-          bind:value={searchTerm}
-          class="search-input"
-        />
-        {#if searchTerm}
-          <button class="btn-clear" on:click={() => (searchTerm = "")}>
-            Clear
-          </button>
-        {/if}
-      </div>
-    </div>
+    <SearchBox bind:searchTerm />
     <StatusFilter bind:statusFilter />
 
     <div class="toolbar-spacer"></div>
