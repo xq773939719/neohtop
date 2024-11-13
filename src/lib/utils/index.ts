@@ -47,43 +47,74 @@ export function formatDate(timestamp: number) {
   return new Date(timestamp * 1000).toLocaleString();
 }
 
+// Cache for compiled regex patterns
+const regexCache = new Map<string, RegExp>();
+
 export function filterProcesses(
   processes: Process[],
   searchTerm: string,
   statusFilter: string,
 ): Process[] {
+  // Early return for empty search and "all" status
+  if (searchTerm.length === 0 && statusFilter === "all") {
+    return processes;
+  }
+
+  // Pre-process search terms once
+  const terms =
+    searchTerm.length > 0
+      ? searchTerm.split(",").map((term) => term.trim())
+      : [];
+
   return processes.filter((process) => {
-    let matchesSearch = searchTerm.length === 0;
-    searchTerm
-      .split(",")
-      .map((term) => term.trim())
-      .forEach((term) => {
-        const nameSubstringMatch = process.name
-          .toLowerCase()
-          .includes(term.toLowerCase());
-        const nameRegexMatch = (() => {
-          try {
-            return new RegExp(term, "i").test(process.name);
-          } catch {
-            return false;
-          }
-        })();
-        const commandMatch = process.command
-          .toLowerCase()
-          .includes(term.toLowerCase());
-        const pidMatch = process.pid.toString().includes(term);
-        matchesSearch ||=
-          nameSubstringMatch || nameRegexMatch || commandMatch || pidMatch;
-      });
+    // Early status check
+    if (
+      statusFilter !== "all" &&
+      process.status.toLowerCase() !== statusFilter
+    ) {
+      return false;
+    }
 
-    const matchesStatus =
-      statusFilter === "all"
-        ? true
-        : process.status.toLowerCase() === statusFilter;
+    // Skip search if no terms
+    if (terms.length === 0) {
+      return true;
+    }
 
-    return matchesSearch && matchesStatus;
+    // Cache lowercase values
+    const processNameLower = process.name.toLowerCase();
+    const processCommandLower = process.command.toLowerCase();
+    const processPidString = process.pid.toString();
+
+    // Check each term
+    return terms.some((term) => {
+      const termLower = term.toLowerCase();
+
+      // Try exact matches first (faster)
+      if (
+        processNameLower.includes(termLower) ||
+        processCommandLower.includes(termLower) ||
+        processPidString.includes(term)
+      ) {
+        return true;
+      }
+
+      // Try regex match last (slower)
+      try {
+        let regex = regexCache.get(term);
+        if (!regex) {
+          regex = new RegExp(term, "i");
+          regexCache.set(term, regex);
+        }
+        return regex.test(process.name);
+      } catch {
+        return false;
+      }
+    });
   });
 }
+
+// Create a Map for quick pinned status lookup
+const isPinned = new Map<string, boolean>();
 
 export function sortProcesses(
   processes: Process[],
@@ -91,17 +122,32 @@ export function sortProcesses(
   pinnedProcesses: Set<string>,
 ): Process[] {
   return [...processes].sort((a, b) => {
-    const aPin = pinnedProcesses.has(a.command);
-    const bPin = pinnedProcesses.has(b.command);
-    if (aPin && !bPin) return -1;
-    if (!aPin && bPin) return 1;
+    // Cache pinned status
+    let aPin = isPinned.get(a.command);
+    if (aPin === undefined) {
+      aPin = pinnedProcesses.has(a.command);
+      isPinned.set(a.command, aPin);
+    }
 
+    let bPin = isPinned.get(b.command);
+    if (bPin === undefined) {
+      bPin = pinnedProcesses.has(b.command);
+      isPinned.set(b.command, bPin);
+    }
+
+    // Quick pin comparison
+    if (aPin !== bPin) {
+      return aPin ? -1 : 1;
+    }
+
+    // Only compute direction once
+    const direction = sortConfig.direction === "asc" ? 1 : -1;
     const aValue = a[sortConfig.field];
     const bValue = b[sortConfig.field];
-    const direction = sortConfig.direction === "asc" ? 1 : -1;
 
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      return direction * aValue.localeCompare(bValue);
+    // Type-specific comparisons
+    if (typeof aValue === "string") {
+      return direction * aValue.localeCompare(bValue as string);
     }
     return direction * (Number(aValue) - Number(bValue));
   });
