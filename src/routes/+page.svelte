@@ -3,9 +3,9 @@
   import { onMount, onDestroy } from "svelte";
   import { StatsBar } from "$lib/components/stats";
   import ToolBar from "$lib/components/ToolBar.svelte";
-  import ProcessTable from "$lib/components/process/ProcessTable.svelte";
-  import ProcessDetailsModal from "$lib/components/ProcessDetailsModal.svelte";
-  import KillProcessModal from "$lib/components/KillProcessModal.svelte";
+  import { ProcessTable } from "$lib/components/process";
+  import { ProcessDetailsModal } from "$lib/components/modals";
+  import { KillProcessModal } from "$lib/components/modals";
   import { formatMemorySize, formatStatus } from "$lib/utils";
   import { themeStore } from "$lib/stores";
   import type { Process, SystemStats, Column } from "$lib/types";

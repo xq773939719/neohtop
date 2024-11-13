@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Modal from "./Modal.svelte";
+  import { Modal } from "$lib/components/modals";
   import { formatStatus, formatUptime } from "$lib/utils";
   import type { Process } from "$lib/types";
   import Fa from "svelte-fa";
@@ -8,7 +8,6 @@
     faMemory,
     faMicrochip,
     faHardDrive,
-    faNetworkWired,
   } from "@fortawesome/free-solid-svg-icons";
 
   export let show = false;
@@ -16,10 +15,6 @@
   export let onClose: () => void;
 
   $: currentProcess = process;
-
-  function formatMemory(bytes: number) {
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-  }
 
   function formatBytes(bytes: number) {
     if (bytes < 1024) return `${bytes} B`;
