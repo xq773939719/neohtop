@@ -1,9 +1,9 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
   import { onMount, onDestroy } from "svelte";
-  import StatsBar from "$lib/components/StatsBar.svelte";
+  import { StatsBar } from "$lib/components/stats";
   import ToolBar from "$lib/components/ToolBar.svelte";
-  import ProcessTable from "$lib/components/ProcessTable.svelte";
+  import ProcessTable from "$lib/components/process/ProcessTable.svelte";
   import ProcessDetailsModal from "$lib/components/ProcessDetailsModal.svelte";
   import KillProcessModal from "$lib/components/KillProcessModal.svelte";
   import { formatMemorySize, formatStatus } from "$lib/utils";
@@ -35,7 +35,7 @@
       id: "status",
       label: "Status",
       visible: true,
-      format: formatStatus,
+      format: (v) => v,
     },
     { id: "user", label: "User", visible: true },
     {
