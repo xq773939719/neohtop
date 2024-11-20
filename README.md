@@ -11,7 +11,11 @@
 </div>
 
 <div align="center">
-  <img src="https://github.com/Abdenasser/neohtop/blob/main/screenshot.png?raw=true" alt="NeoHtop Screenshot" width="800" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="screenshot.png">
+    <source media="(prefers-color-scheme: light)" srcset="screenshot-light.png">
+    <img alt="NeoHtop Screenshot" src="./screenshot.png" width="800">
+  </picture>
 </div>
 
 ## Table of Contents
