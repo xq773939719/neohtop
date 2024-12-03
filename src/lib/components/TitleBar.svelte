@@ -97,6 +97,13 @@
     }
   }
 
+  @media screen and (prefers-reduced-motion: reduce) {
+    .neon,
+    .scanlines {
+      animation: none;
+    }
+  }
+
   .app-icon {
     width: 16px;
     height: 16px;
