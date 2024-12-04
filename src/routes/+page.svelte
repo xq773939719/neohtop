@@ -136,7 +136,9 @@
 <ProcessDetailsModal
   show={showInfoModal}
   process={selectedProcess}
+  {processes}
   onClose={processStore.closeProcessDetails}
+  onShowDetails={processStore.showProcessDetails}
 />
 
 <KillProcessModal

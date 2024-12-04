@@ -1,247 +1,373 @@
 <script lang="ts">
   import { Modal } from "$lib/components";
-  import { formatUptime, formatBytes, formatDate } from "$lib/utils";
+  import { formatBytes } from "$lib/utils";
   import type { Process } from "$lib/types";
   import Fa from "svelte-fa";
   import {
-    faClock,
     faMemory,
     faMicrochip,
-    faHardDrive,
+    faCodeFork,
+    faTerminal,
+    faList,
   } from "@fortawesome/free-solid-svg-icons";
 
   export let show = false;
   export let process: Process | null = null;
   export let onClose: () => void;
+  export let processes: Process[] = [];
+  export let onShowDetails: (process: Process) => void;
+
+  $: childProcesses = process
+    ? processes.filter((p) => p.ppid === process.pid)
+    : [];
 </script>
 
-<Modal {show} title="Process Details" maxWidth="700px" {onClose}>
+<Modal {show} title="Process Details" maxWidth="1000px" {onClose}>
   {#if process}
-    <div class="process-details">
-      <!-- Basic Info Section -->
-      <section class="detail-section">
-        <h3>Basic Information</h3>
-        <div class="detail-grid">
-          <div class="detail-row">
-            <span class="detail-label">Name:</span>
-            <span class="detail-value">{process.name}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">PID:</span>
-            <span class="detail-value">{process.pid}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Parent PID:</span>
-            <span class="detail-value">{process.ppid}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">User:</span>
-            <span class="detail-value">{process.user}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Status:</span>
-            <span class="detail-value">{process.status}</span>
+    <div class="modal-content">
+      <!-- Header Stats -->
+      <div class="header-stats">
+        <div class="stat-item">
+          <div class="stat-label">PID</div>
+          <div class="stat-value">{process.pid}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Status</div>
+          <div
+            class="stat-value status"
+            class:running={process.status === "Running"}
+          >
+            {process.status}
           </div>
         </div>
-      </section>
+        <div class="stat-item">
+          <div class="stat-label">CPU</div>
+          <div class="stat-value">{process.cpu_usage.toFixed(1)}%</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Memory</div>
+          <div class="stat-value">{formatBytes(process.memory_usage)}</div>
+        </div>
+      </div>
 
-      <!-- Resource Usage Section -->
-      <section class="detail-section">
-        <h3>Resource Usage</h3>
-        <div class="resource-grid">
-          <!-- CPU Usage -->
-          <div class="resource-card">
-            <div class="resource-header">
+      <!-- Main Content -->
+      <div class="content-grid">
+        <!-- Left Column -->
+        <div class="content-column">
+          <!-- Process Info -->
+          <div class="card">
+            <div class="card-header">
               <Fa icon={faMicrochip} />
-              <span>CPU Usage</span>
+              <span>Process Information</span>
             </div>
-            <div class="resource-value">
-              <div class="progress-bar">
-                <div
-                  class="progress-fill"
-                  style="width: {process.cpu_usage}%"
-                  class:high={process.cpu_usage > 50}
-                  class:critical={process.cpu_usage > 80}
-                ></div>
+            <div class="card-content">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Name</span>
+                  <span class="info-value">{process.name}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">User</span>
+                  <span class="info-value">{process.user}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Parent PID</span>
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
+                  <!-- svelte-ignore a11y_no_static_element_interactions -->
+                  <span
+                    class="info-value clickable"
+                    on:click={() => {
+                      const parent = processes.find(
+                        (p) => p.pid === process.ppid,
+                      );
+                      if (parent) onShowDetails(parent);
+                    }}
+                  >
+                    {process.ppid}
+                  </span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Session ID</span>
+                  <span class="info-value">{process.session_id}</span>
+                </div>
               </div>
-              <span>{process.cpu_usage.toFixed(1)}%</span>
             </div>
           </div>
 
-          <!-- Memory Usage -->
-          <div class="resource-card">
-            <div class="resource-header">
+          <!-- Resource Usage -->
+          <div class="card">
+            <div class="card-header">
               <Fa icon={faMemory} />
-              <span>Memory Usage</span>
+              <span>Resource Usage</span>
             </div>
-            <div class="resource-stats">
-              <div>Physical: {formatBytes(process.memory_usage)}</div>
-              <div>Virtual: {formatBytes(process.virtual_memory)}</div>
-            </div>
-          </div>
-
-          <!-- Disk I/O -->
-          <div class="resource-card">
-            <div class="resource-header">
-              <Fa icon={faHardDrive} />
-              <span>Disk I/O</span>
-            </div>
-            <div class="resource-stats">
-              <div>Read: {formatBytes(process.disk_usage[0])}</div>
-              <div>Written: {formatBytes(process.disk_usage[1])}</div>
-            </div>
-          </div>
-
-          <!-- Time Info -->
-          <div class="resource-card">
-            <div class="resource-header">
-              <Fa icon={faClock} />
-              <span>Time Information</span>
-            </div>
-            <div class="resource-stats">
-              <div>Started: {formatDate(process.start_time)}</div>
-              <div>Running: {formatUptime(process.run_time)}</div>
+            <div class="card-content">
+              <div class="resource-grid">
+                <div class="resource-item">
+                  <div class="resource-header">
+                    <span>CPU Usage</span>
+                    <span class="resource-value"
+                      >{process.cpu_usage.toFixed(1)}%</span
+                    >
+                  </div>
+                  <div class="progress-bar">
+                    <div
+                      class="progress-fill"
+                      style="width: {process.cpu_usage}%"
+                      class:high={process.cpu_usage > 50}
+                      class:critical={process.cpu_usage > 80}
+                    ></div>
+                  </div>
+                </div>
+                <div class="resource-item">
+                  <div class="resource-header">
+                    <span>Memory Usage</span>
+                  </div>
+                  <div class="memory-stats">
+                    <div>Physical: {formatBytes(process.memory_usage)}</div>
+                    <div>Virtual: {formatBytes(process.virtual_memory)}</div>
+                  </div>
+                </div>
+                <div class="resource-item">
+                  <div class="resource-header">
+                    <span>Disk I/O</span>
+                  </div>
+                  <div class="disk-stats">
+                    <div>Read: {formatBytes(process.disk_usage[0])}</div>
+                    <div>Written: {formatBytes(process.disk_usage[1])}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- Command & Environment Section -->
-      <section class="detail-section">
-        <h3>Process Details</h3>
-        <div class="detail-grid">
-          <div class="detail-row full-width">
-            <span class="detail-label">Command:</span>
-            <span class="detail-value command">{process.command}</span>
+        <!-- Right Column -->
+        <div class="content-column">
+          <!-- Command -->
+          <div class="card">
+            <div class="card-header">
+              <Fa icon={faTerminal} />
+              <span>Command</span>
+            </div>
+            <div class="card-content">
+              <div class="command-text">{process.command}</div>
+              <div class="path-text">{process.root}</div>
+            </div>
           </div>
-          <div class="detail-row full-width">
-            <span class="detail-label">Root:</span>
-            <span class="detail-value path">{process.root}</span>
-          </div>
+
+          <!-- Child Processes -->
+          {#if childProcesses.length > 0}
+            <div class="card">
+              <div class="card-header">
+                <Fa icon={faCodeFork} />
+                <span>Child Processes ({childProcesses.length})</span>
+              </div>
+              <div class="card-content">
+                <table class="process-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>PID</th>
+                      <th>CPU</th>
+                      <th>Memory</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {#each childProcesses as child}
+                      <tr
+                        class="clickable"
+                        on:click={() => onShowDetails(child)}
+                      >
+                        <td>{child.name}</td>
+                        <td>{child.pid}</td>
+                        <td>{child.cpu_usage.toFixed(1)}%</td>
+                        <td>{formatBytes(child.memory_usage)}</td>
+                      </tr>
+                    {/each}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          {/if}
+
+          <!-- Environment Variables -->
           {#if process.environ.length > 0}
-            <div class="detail-row full-width">
-              <span class="detail-label">Environment:</span>
-              <div class="detail-value env-vars">
-                {#each process.environ as env}
-                  <div class="env-var">{env}</div>
-                {/each}
+            <div class="card">
+              <div class="card-header">
+                <Fa icon={faList} />
+                <span>Environment Variables</span>
+              </div>
+              <div class="card-content">
+                <div class="env-list">
+                  {#each process.environ as env}
+                    <div class="env-item">{env}</div>
+                  {/each}
+                </div>
               </div>
             </div>
           {/if}
         </div>
-      </section>
+      </div>
     </div>
   {/if}
 </Modal>
 
 <style>
-  .process-details {
+  /* Base Modal Content */
+  .modal-content {
     display: flex;
     flex-direction: column;
     gap: 24px;
-  }
-
-  .detail-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .detail-section h3 {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
     color: var(--text);
-    margin: 0;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--surface0);
   }
 
-  .detail-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .detail-row {
-    display: flex;
-    gap: 12px;
-    padding: 8px;
-    border-radius: 4px;
-    background: var(--surface0);
-  }
-
-  .detail-row.full-width {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .detail-label {
-    display: flex;
-    color: var(--subtext0);
-    font-weight: 500;
-  }
-
-  .detail-value {
-    flex: 1;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-      monospace;
-    word-break: break-all;
-  }
-
-  .detail-value.command,
-  .detail-value.path {
-    font-size: 12px;
-    color: var(--subtext1);
-    padding: 8px;
-    background: var(--mantle);
-    border-radius: 4px;
-  }
-
-  .resource-grid {
+  /* Header Stats */
+  .header-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 16px;
-  }
-
-  .resource-card {
-    background: var(--surface0);
     padding: 16px;
+    background: var(--surface0);
     border-radius: 8px;
   }
 
-  .resource-header {
+  .stat-item {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
     color: var(--subtext0);
     font-weight: 500;
   }
 
-  .resource-header :global(svg) {
+  .stat-value {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .stat-value.status {
+    color: var(--subtext0);
+  }
+
+  .stat-value.status.running {
+    color: var(--green);
+  }
+
+  /* Main Content Grid */
+  .content-grid {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.4fr) minmax(400px, 0.6fr);
+    gap: 24px;
+  }
+
+  .content-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0; /* Prevent overflow issues */
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface0);
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 0; /* Prevent overflow issues */
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--surface1);
+    color: var(--subtext0);
+    font-weight: 500;
+  }
+
+  .card-header :global(svg) {
     width: 14px;
     height: 14px;
     color: var(--blue);
   }
 
-  .resource-value {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .card-content {
+    padding: 16px;
+    overflow: auto;
   }
 
+  /* Info Grid */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-label {
+    color: var(--subtext0);
+    font-size: 12px;
+  }
+
+  .info-value {
+    color: var(--text);
+  }
+
+  .info-value.clickable {
+    cursor: pointer;
+    color: var(--blue);
+  }
+
+  .info-value.clickable:hover {
+    text-decoration: underline;
+  }
+
+  /* Resource Usage */
+  .resource-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .resource-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .resource-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--subtext0);
+    font-size: 12px;
+  }
+
+  .resource-value {
+    color: var(--text);
+  }
+
+  /* Progress Bar */
   .progress-bar {
-    flex: 1;
-    height: 8px;
+    height: 6px;
     background: var(--surface1);
-    border-radius: 4px;
+    border-radius: 3px;
     overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
     background: var(--blue);
-    transition: width 0.3s ease;
+    transition: width 0.2s ease;
   }
 
   .progress-fill.high {
@@ -252,33 +378,132 @@
     background: var(--red);
   }
 
-  .resource-stats {
-    display: flex;
-    flex-direction: column;
+  /* Memory and Disk Stats */
+  .memory-stats,
+  .disk-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
-    font-size: 13px;
     color: var(--text);
   }
 
-  .env-vars {
+  /* Command and Path */
+  .command-text,
+  .path-text {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
+  .path-text {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--subtext0);
+  }
+
+  /* Process Table */
+  .process-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .process-table th {
+    text-align: left;
+    padding: 8px;
+    color: var(--subtext0);
+    font-weight: 500;
+    border-bottom: 1px solid var(--surface1);
+  }
+
+  .process-table td {
+    padding: 8px;
+    border-bottom: 1px solid var(--surface1);
+  }
+
+  .process-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .process-table tr.clickable {
+    cursor: pointer;
+  }
+
+  .process-table tr.clickable:hover {
+    background: var(--surface1);
+  }
+
+  /* Environment Variables */
+  .env-list {
     display: flex;
     flex-direction: column;
     gap: 4px;
     max-height: 200px;
     overflow-y: auto;
-    padding: 8px;
+    margin: -16px;
+    padding: 16px;
+  }
+
+  .env-item {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--subtext1);
+    font-size: 12px;
+  }
+
+  .env-item:hover {
+    background: var(--surface1);
+  }
+
+  /* Update scrollbar styles to match the container edges */
+  .env-list::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .env-list::-webkit-scrollbar-track {
+    background: var(--surface0);
+    border-radius: 0;
+  }
+
+  .env-list::-webkit-scrollbar-thumb {
+    background: var(--surface2);
+    border-radius: 4px;
+    border: 2px solid var(--surface0);
+  }
+
+  .env-list::-webkit-scrollbar-thumb:hover {
+    background: var(--surface1);
+  }
+
+  /* Scrollbar Styles */
+  :global(.modal-content *::-webkit-scrollbar) {
+    width: 8px;
+    height: 8px;
+  }
+
+  :global(.modal-content *::-webkit-scrollbar-track) {
     background: var(--mantle);
     border-radius: 4px;
   }
 
-  .env-var {
-    font-size: 12px;
-    color: var(--subtext1);
-    padding: 4px 8px;
+  :global(.modal-content *::-webkit-scrollbar-thumb) {
+    background: var(--surface2);
     border-radius: 4px;
   }
 
-  .env-var:hover {
+  :global(.modal-content *::-webkit-scrollbar-thumb:hover) {
     background: var(--surface1);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 900px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .header-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
