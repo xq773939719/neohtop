@@ -22,7 +22,12 @@
     : [];
 </script>
 
-<Modal {show} title="Process Details" maxWidth="1000px" {onClose}>
+<Modal
+  {show}
+  title={`${process ? process.name.slice(0, 10) : "Unknown Process"} - Process Details`}
+  maxWidth="1000px"
+  {onClose}
+>
   {#if process}
     <div class="modal-content">
       <!-- Header Stats -->
